@@ -1,2 +1,5 @@
 .Rproj.user
 .Rhistory
+vignettes/*.R
+vignettes/*.md
+vignettes/*.html
