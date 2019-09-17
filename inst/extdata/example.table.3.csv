@@ -1,0 +1,7 @@
+pathway,gene,N,?Ct Mean,?Ct SEM,N,?Ct Mean,?Ct SEM,LS mean,Fold change,p-value
+Insulin signal transduction pathway,Gene 1,40,3.731,0.194,15,3.123,0.319,0.808,1.751,0.049
+Insulin signal transduction pathway,Gene 2 has a long long name here,42,2.408,0.152,15,1.787,0.164,0.57,1.485,0.059
+Insulin signal transduction pathway,Gene 3,37,0.391,0.15,14,-0.179,0.158,0.54,1.454,0.083
+Apoptosis Through Death Receptors,Gene 4 w/ long names,36,3.879,0.151,16,3.425,0.268,0.647,1.566,0.095
+Apoptosis Through Death Receptors,Gene 5,40,-3.025,0.148,13,-1.865,0.722,-0.904,-1.871,0.098
+Apoptosis Through Death Receptors,Gene 6,40,2.138,0.231,14,1.193,0.389,0.982,1.975,0.103

@@ -1,0 +1,38 @@
+---
+knit: (function(inputFile, encoding) { 
+    oFormat="docx";
+    outputFileName <- paste("test",oFormat,sep='.'); 
+    wordTemplateFileName = system.file("extdata", "word.template.for.Rmd.dotx", package = "wfr");
+    if(oFormat=="docx"){
+        oObj=bookdown::word_document2(toc=T,reference_docx = wordTemplateFileName);
+    }else if(oFormat=="html"){
+        oObj=bookdown::html_document2(toc=T,toc_float=T,highlight="haddock");
+    }else if(oFormat=="pdf"){
+        oObj=bookdown::pdf_document2(toc=T,highlight="haddock");
+    }else{
+        stop("other format not defined yet!");
+    };
+    rmarkdown::render(inputFile,
+                        encoding=encoding,
+                        output_file=file.path(outputFileName),
+                        output_format=oObj) }) 
+
+title: "Untitled"
+author: "jike"
+date: "`r Sys.Date()`"
+---
+
+
+```{r echo=F, message = F, include= F, warning = T, dpi = 300}
+knitr::opts_chunk$set(echo = F,message = F,warning = F,error=T,include = T,cache=F,fig.align="center",
+                      fig.width = 10, fig.height=8, dpi = 300, out.width = ifelse(oFormat=="pdf","480pt","800px"))
+
+# isDocx = T #use flextable regardless of the output format
+isDocx = (oFormat!="html")
+library(wfr)
+sharedLibs <-c("knitr","pander","xtable","magrittr","flextable","officer","openxlsx")
+extraLibs = `if`(isDocx,c("captioner","stringr"),c("kableExtra"))
+loadLibs(c(sharedLibs,extraLibs))
+```  
+
+`r if(!isDocx) setHtmlHeaderProperty()`

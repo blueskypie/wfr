@@ -1,0 +1,8 @@
+variable,stats,case,control,all
+Age (years),Number,14,12,26
+Age (years),Mean (SD),21 (9.7),18.5 (9),19.8 (9.3)
+Age (years),Median,21.7,18.7,21.4
+Age (years),Min : Max,4.3 : 33.4,4.6 : 34.4,4.3 : 34.4
+Sex [n (%)],Number,14,13,27
+Sex [n (%)],Female,6 (42.9%),5 (38.5%),11 (40.7%)
+Sex [n (%)],Male,8 (57.1%),8 (61.5%),16 (59.3%)

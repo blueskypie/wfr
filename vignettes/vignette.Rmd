@@ -1,0 +1,366 @@
+---
+title: "wfr: A Workflow to Assist the Creation of Documents Containing Many Tables and Figures"
+author: Jike Cui, Wenfei Zhang, Weiliang Qiu, Jun Luo, Liwei Wang, Donghui Zhang
+date: "`r Sys.Date()`"
+output:
+    bookdown::html_document2:
+      base_format: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{wfr: A Workflow to Assist the Creation of Documents}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+
+---
+
+
+```{r echo=F, message = F, include= F, warning = T, dpi = 300}
+oFormat="html"
+knitr::opts_chunk$set(echo = F,message = F,warning = F,error=T,include = T,cache=F,fig.align="center",
+                      fig.width = 10, fig.height=8, dpi = 300, 
+                      out.width = ifelse(oFormat=="pdf","480pt","800px"))
+
+
+#isDocx = (oFormat!="html")
+isDocx=T
+library(wfr)
+sharedLibs <-c("knitr","pander","xtable","magrittr","flextable","officer","openxlsx")
+extraLibs = `if`(isDocx,c("captioner","stringr"),c("kableExtra"))
+loadLibs(c(sharedLibs,extraLibs))
+```  
+
+`r if(oFormat=="html") setHtmlHeaderProperty()`
+
+# Acknowledgement
+The development of this workflow is inspired by Dr. Wenfei Zhang's previous work in separating data analysis from document creation - saving analysis results in R script and including those results in a R markdown file for document generation.
+
+This work was supervised by Dr. Donghui Zhang at Sanofi.
+
+Thanks to the authors of those excellent R package [flextable](https://davidgohel.github.io/flextable), [kableExtra](https://haozhu233.github.io/kableExtra), knitr, and [bookdown](https://bookdown.org/yihui/bookdown).
+
+
+# Who can benefit from this package
+The primary purpose of this package is to help saving time for users of the following tasks:   
+
+* Using R to carry out large data analysis project with many outputs, e.g. tables and figures, to save and manage.
+* Using R markdown to create post-analysis documents containing many tables and figures from the first step.
+
+In addition, it ensures consist formatting of the tables and numbers in all such documents created by different people in an organization.
+
+# Background and Objective
+## Non-statistical Work in Large Data Analysis Project
+Significant amount of effort spent in a data analysis task is non-statistical. 
+
+A large data analysis project can produce many outputs, e.g. tables and figure, that are reviewed later. Annotating and managing all outputs are time-consuming but very important for future query, review, and understanding.
+
+More importantly, in compiling reports for such projects, many of those output tables and figures are included. `r tRef("tab1",isDocx)` is one such example. If a report contains two dozen such tables, compiling, formatting, and cross-referencing those tables take lots of time.
+
+```{r tab1,message=T}
+fileName=system.file("extdata", "example.table.1.csv", package = "wfr")
+df1 = read.csv(fileName)
+header = list(c('variable','stats','subject','subject','subject'),colnames(df1))
+footer = list(c("Note:"),c("subject","Caucasian$^ref_1$ only","a","header"),
+              c("Age (years)","One control has no record","b","body"))
+rmdTable(df1,header = header, footer=footer,rowHeaderInd = 2,isDocx = isDocx,caption = tCap("Age and Sex statistics","tab1",isDocx))
+```  
+
+
+## How to reduce non-statistical work
+So the objective of this package is to help to reduce the portion of non-statistical work in this process; specifically:  
+
+* It provides a way to systematically record the output from the data analysis R script, even including format information if the output is a table.
+* It can automatically create the Rmd file to produce either docx, html, or pdf output.
+* Numeric columns of the tables in the report are formatted automatically and properly based on the distribution of the column.   
+
+
+# The Workflow
+Figure \@ref(fig:figWF) includes four pictures dispicting the proposed workflow in conducting data analysis project:
+
+```{r figWF, fig.cap="Proposed workflow from R script to Rmd file"}
+knitr::include_graphics(system.file("extdata", "workflow.png", package = "wfr"))
+#knitr::include_graphics("../inst/extdata/workflow.png")
+```  
+
+1. In the data analysis R script, use `saveOutput()` to save each object you want to keep with a caption to explain what the object is. `saveOutput` saves either the current R workspace or the rds file of the object, depending on the flag `saveWorkspace`. A text or picture file, e.g. `csv` or `png`, of the object can also be saved via `ofName`. A number of formating options, if the object is a table, can also be saved through corresponding parameters of `saveOutput`.  
+
+   `saveOutput` also enters all those information into a global data.frame, `OUTPUTS`, which is saved as an excel file at the end of R script.
+
+2. The file explorer shows all the saved files and the excel file.
+
+3. The content of the excel file can be manually edited. The `ofName` cells are imbedded with links to the file, and clicking opens the files directly.
+
+4. Run function `createRmd()` to produce the Rmd file for the report in either html or docx format. `wfr` package provides a R markdown template file that can output docx, html, or pdf format depending by setting `oFormat` in the file. Appending to this Rmd template file, `createRmd` firstly adds a code chunk to read in the excel file, then one code chunk per row of the excel file for cross reference and display of the object in the row. If the object is a table, its numerical columns are automatically formatted based on the min, max, and median values of the column by [num2formattedStr]. Also see [showObj] for details on how it displays an object.
+
+Based on this auto-generated Rmd file, users can focus on the text part of the report, saving significantly amount of time. A few lines of the Rmd file needs to be customized before knitting, i.e. `oFormat, isDocx, outputFileName, title, author`.
+
+
+# Specific Functions
+## showObj
+It displays an object in knitr code chunk and set the caption with cross reference. Figure \@ref(fig:figSO) dispicts how it works:
+
+```{r figSO, fig.cap="Under the hood of `showObj`"}
+knitr::include_graphics(system.file("extdata", "showObj.PNG", package = "wfr"))
+#knitr::include_graphics("../inst/extdata/showObj.PNG")
+```  
+
+1. Identifies the row containing the `objID` in the data.frame read in from the excel file.
+2. Reads the object under `rImageFile` in that row.
+3. Display the object if it's a figure, or pass it to `rmdTable` if a table, along with formatting info either passed in via `showObj` or read from other columns in that row of the data.frame.
+
+Also note that the chunk labels are passed to `showObj` as `objID` whose default value is actually `NULL`, meaning it is not a required parameter. In knitting the Rmd file, `showObj` can grab the chunk label automatically if `objID` is not supplied. But by supplying `objID`, a chunk can be run alone, e.g. for debugging purpose if the display from `showObj` is wrong. To debug, just type `debugonce(showObj)` in R console, and read in necessary variables, e.g. `df1` and `isDocx`, and run the chunk.
+
+## rmdTable
+### How to build a table
+This is a wrapper function to plot tables using either `flextable` or `kable` depending on a flag `isDocx`. If `isDocx` is `TRUE`, the default, `flextable` is used because `kable` cannot produce complex tables for Word document. Below are some examples on how to use this function.
+
+Figure \@ref(fig:figRmdT1) shows the original table, the final table we want to create, and the intermediate tables; note the name of different sections of a table, esp. _row header_, the columns in the table body used as the header of rows.
+
+```{r figRmdT1, fig.cap="From the original to the final table"}
+knitr::include_graphics(system.file("extdata", "rmdTable.1.PNG", package = "wfr"))
+#knitr::include_graphics("../inst/extdata/rmdTable.1.PNG")
+```  
+
+The below code chunk shows how each of the table in Figure \@ref(fig:figRmdT1) are created, `df1` contains the content forming the original table. The header of `df1` has only one row, whereas the header of the final table have two rows. Therefore a new header needs to be created with two vectors, corresponding to the two rows in the final table. `rmdTable` **automatically merges neighboring cells in the header if their contents are identical**, e.g. the four `A` cells, and the two `C` cells as illustrated in intermediate table 2.
+
+```{#numCode .R .numberLines}
+df1=data.frame(A=c("a","a","b3"), B=c("b1","b2","b3"), C1=1:3, C2=2:4)
+flextable(df1) #table 1
+
+columnHeader=list(c('A','A','C','C'), c('A','A','C1','C2'))
+rmdTable(df1,header = columnHeader) #2
+
+rmdTable(df1,header = header, rowHeaderInd = 1) #3
+
+rmdTable(df1,header = header, rowHeaderInd = 2) #4
+
+footer=list(c("A","Arkansas$~ref$",'1','header'),
+            c("C1","Kansas$^ref$",'x','header'),
+            c('a',"Arizona",'2','body'))
+
+rmdTable(df1,header = header,
+           rowHeaderInd = 2,
+           footer = footer,
+           caption = "table 5: final table",
+           colWidth = c(2,1,1,1),
+           fontSize = 12) #5
+
+# setting as character string
+colWidth = "2,1,1,1"
+header = "A | A | C | C || A | A | C1 | C2"
+footer = "A|Arkansas$~ref$|1|header || 
+         C1|Kansas$^ref$|x|header   || 
+         a|Arizona|2|body"
+```
+
+`rowHeaderInd` is an integer and means column `1:rowHeaderInd` in the table body are going to be the row header. Setting `rowHeaderInd` has two effects on the row headers, as seen in intermediate table 2 and 4:
+
+* Just like in the column header, __neighboring cells of identical content are collapsed into one multi-row/column cell__.
+* Font becomes bold.
+
+There are a number of additions in the final table. Probably the most important one is footer; it's a list of character vector which contains _the content of cell to tag_, _the content of footer_, _the tag symbol_, _the section of the table to identify the cell_. Some parameters can also be set as string so that they can be recorded into the excel file in Figure \@ref(fig:figWF), either manually or via `saveOutput`. See the documentation of `rmdTable` for a detailed explanation on `footer` and how to construct the strings.
+
+### Table theme
+Figure \@ref(fig:figTableTheme) lists all the themes available for docx output, which is based on `flextable` but with the addition of the light grey line inside the table. 
+
+```{r figTableTheme, fig.cap="Table themes for Word output"}
+knitr::include_graphics(system.file("extdata", "table.themes.png", package = "wfr"))
+#knitr::include_graphics("../inst/extdata/table.themes.png")
+```  
+
+For html output, function `kable` is used, and only zebra, box, and vanilla are available. In addition, I have not found a way, using `kable`, to merge horizontal neighboring cells in the *first* row of header (the two `A`) and in the table *body* (the two `b3`), as figure \@ref(fig:figTableKable) shows. Although such needs for more table themes and merging those cells are rare, if really needed, `flextable` can be used for html output by just setting `isDocx = T` instead of the `isDocx = (oFormat != "html")` in the Rmd file produced by `createRmd`. The only drawback is that the cross-reference of flextable-produced tables is not URL-linked, i.e. not clickable.
+
+```{r figTableKable, fig.cap="`kable` cannot merge horizontal cells in the 1st row of header and table body"}
+knitr::include_graphics(system.file("extdata", "table.kable.PNG", package = "wfr"))
+#knitr::include_graphics("../inst/extdata/table.kable.PNG")
+```  
+
+## tRef and tCap
+When `flextable` is used, that is, when the output format of the Rmd file is Word, the general way to do cross reference for tables, i.e. _`Table` `\@ref(tab:label)`_, does not work. Therefore, `tRef` and `tCap` are created to handle table cross reference in Rmd text and table caption, regardless of the output format.
+
+* **`` `r '\x60r tRef("label")\x60'` ``** replaces **`Table` `\@ref(tab:label)` ** in Rmd text
+* To use `rmdTable`, parameter `caption` should be set as `tCap(original.caption,"label",isDocx)` to enable cross reference in caption, e.g. `caption = tCap("Age and Sex statistics","tab1",isDocx)` for `r tRef("tab1", isDocx)`.
+
+## num2formattedStr
+Each numerical column of the `dataDf` in `rmdTable` is formatted automatically by funtion `num2formattedSt`. This function makes decision on the following four aspects of formatting based on the min, median, max values of a numeric vector, so that the formatted numbers carry enough information and are in a length less than 10 characters. For example, for a numeric vector `v`, if `median(abs(v)) > 100`, it makes no sense to keep decimal digits.
+
+* number of sinificant digits
+* number of decimal points
+* whether to apply 1000 separator ','
+* whether to apply scientific notation
+
+To illustrate, `r tRef("tabNoF",isDocx)` is before formatting, and `r tRef("tabF",isDocx)` is after formatting.
+```{r tabNoF, echo=T}
+fileName=system.file("extdata", "example.format.csv", package = "wfr")
+df1 = read.csv(fileName,check.names = F)
+
+flextable(df1) %>% set_caption(caption=tCap("Auto-formatting on numbers using flextable","tabNoF",isDocx)) %>% autofit()
+```
+<br>
+
+```{r tabF, echo=T}
+rmdTable(df1, caption = tCap("Auto-formatting on numbers using num2formattedStr","tabF",isDocx), isDocx = isDocx)
+```
+
+## setWidths
+For non-html output, this function properly and automatically sets the width of each column so that the width of the whole table does not exceed the maximum width set by `maxTableWidth`. The default value of `maxTableWidth` is 7.0 inches, which corresponds to "PAGE LAYOUT" > "size" > "letter" and "Margins" > "Moderate" in MS Word. 6.5 inches corresponds to  "Margins" > "Normal".
+
+The width of the whole table is the sum of its column. However, computing such width can be very tricky:  
+
+* The width of a table cell depends on the font family, font size, font type (bold, italic, etc), and table theme. For large and complex tables which barely fits the `maxTableWidth`, change of any those factors may mess up some columns. function `setWidths`  is only tested for font Arial, size 12 - 7, normal and bold type, and theme zebra. 
+
+* The width of a column is the maximum width among all cells in that column, including header and table body. If the sum of column widths does not fit the `maxTableWidth`, there are a few options to reduce the column widths:  
+
+    * Wrapping the long headers
+    * Reducing the font size up to `minFontSize`
+    * Wrapping the long columns in table body
+        
+In majority cases, the column widths set by `setWidths` does not need any manual adjustment. This function is called by [rmdTable] internally. See manual for its algorithm to determine the width of each column. Following are a few illustrations.
+
+`r tRef("tabSW1",isDocx)` sets `maxTableWith = 7`. The default font size is 11. The algorithm chooses wrapping headers over reducing font size. Headers are wrapped in a way so that
+
+* headers of single word are not wrapped, even if they are much longer than its table body; 
+* other headers whose lengths are greater than those of table body are all wrapped once, instead of some not being wrapped and some being wrapped twice. Such behavior is achieved by finding the non-letter character closest to the center of a header and using that as wrapping point. The length of the header is updated to be the length after wrapping after addition of a proper cell padding.
+
+```{r tabSW1, echo=T}
+fileName=system.file("extdata", "example.table.2.csv", package = "wfr")
+df1 = read.csv(fileName,check.names = F)
+colnames(df1)=gsub('?','Δ',colnames(df1),fixed = T)
+header=list(c("pathway","gene",rep("batch A",3),rep("batch B",3),rep("A vs B",3)),colnames(df1))
+footer=list(c("ΔCt Mean","ΔCt is calulated using median value as reference gene for each visit and patient,i.e., ΔCt = Ct - Ct$~median$","a","header"),
+            c("Gene 1", "Our target gene$^ref$","b","body"))
+rmdTable(df1, caption = tCap("maxTableWidth is set as 7.0 inches (default)","tabSW1",isDocx),
+         footer = footer,header = header,rowHeaderInd = 1, isDocx = isDocx)
+```
+
+
+ `r tRef("tabSW2",isDocx)` sets `maxTableWith = 6.5`. The algorithm reduces font size by 1 to fit the table. Note that the font size of the table title and footer is not affected. The former has a minimum size 10, and the latter is set by `footerFontSize` in [rmdTable], which defaults at 9.
+
+```{r tabSW2, echo=F}
+rmdTable(df1, caption = tCap("maxTableWidth is set as 6.5 inches ","tabSW2",isDocx),
+         maxTableWidth = 6.5,footer = footer,header = header,rowHeaderInd = 1, isDocx = isDocx)
+```
+
+
+ `r tRef("tabSW4",isDocx)` sets `maxTableWith = 6.5` and `minFontSize = 9`. Due to some long cells in table body, reducing the font size to 9 still does not fit 6.5 inches. The long columns of table body, i.e. _pathway_ and _gene_, are wrapped in a way that   
+ 
+ * columns in `rowHeaderInds`, e.g. _pathway_, may be wrapped more than once if each of its cells spans multiple cells.
+ * other columns are wrapped as little as possible to avoid unnecessary wrapping; for example, "_Gene 4 w/ long names_" is not wrapped.
+ 
+```{r tabSW4, echo=T}
+fileName=system.file("extdata", "example.table.3.csv", package = "wfr")
+df1 = read.csv(fileName,check.names = F)
+colnames(df1)=gsub('?','Δ',colnames(df1),fixed = T)
+rmdTable(df1, caption = tCap("maxTableWidth is set as 6.5 inches ","tabSW4",isDocx),
+         maxTableWidth = 6.5,footer = footer,header = header,rowHeaderInd = 1,
+         minFontSize = 9, isDocx = isDocx)
+```
+
+ `r tRef("tabSW6",isDocx)` does not reduce font size since the algorithm sees column _pathway_ can be wrapped multiple times.
+
+```{r tabSW6, echo=F}
+df2=df1
+df2[,2]=NULL
+footer2=footer[1]
+header2=list(c("pathway",rep("batch A",3),rep("batch B",3),rep("A vs B",3)),colnames(df2))
+rmdTable(df2, caption = tCap("maxTableWidth is set as 6.5 inches ","tabSW6",isDocx),
+         maxTableWidth = 6.5,footer = footer2,header = header2,rowHeaderInd = 1,
+         minFontSize = 9, isDocx = isDocx)
+```
+
+In contrary, in `r tRef("tabSW7",isDocx)` the algorithm prefers reducing font size over wrapping column _gene_ since its table body cells are all single row.
+
+
+```{r tabSW7, echo=F}
+df2=df1
+df2[,1]=NULL
+footer2=footer
+header2=list(c("gene",rep("batch A",3),rep("batch B",3),rep("A vs B",3)),colnames(df2))
+rmdTable(df2, caption = tCap("maxTableWidth is set as 6.5 inches and minFontSize as 9","tabSW7",isDocx),
+         maxTableWidth = 6.5,footer = footer2,header = header2,minFontSize = 9, isDocx = isDocx)
+```
+
+
+# Template Files
+For Word output, the formatting style is based on a template file `system.file("extdata", "word.template.for.Rmd.dotx", package = "wfr")`. Reads its content to see how to know how its style corresponds to R markdown syntax and how to edit its style. See [this article](https://rmarkdown.rstudio.com/articles_docx.html) for more details.
+
+# Installation and testing the package
+## Dependency
+flextable_0.5.5 is required.
+
+For docx output from Rmd file, [pandoc](https://pandoc.org) version >= 2.0 is needed. Rstudio is bundled with pandoc, but only version >= 1.2 has the needed pandoc version. So update your Rstudio if necessary.
+
+For pdf output of Rmd file, a LaTeX engine is needed. If not available, run the following code and restart Rstudio after it finishes. However, this and most LaTeX engine do not accept unicode characters; it might be easier to produce MS Word document and then export it as pdf file.
+
+```{#numCode .R .numberLines}
+install.packages(c('tinytex', 'webshot'))
+tinytex::install_tinytex()
+webshot::install_phantomjs()
+```
+
+## Testing
+Run the following code for a simple testing.
+```{#numCode .R .numberLines}
+install.packages(c("flextable","knitr","kableExtra","captioner","officer",
+                   "openxlsx","bookdown", "pander"), dependencies=T)
+                   
+# installation from source; add path to the file
+install.packages("wfr_0.3.0.tar.gz", repos = NULL, type="source",
+                 dependencies=T)
+
+# testing
+library(wfr)
+library(ggplot2)
+
+df1=data.frame(A=c("a","a","b3"),
+               B=c("b1","b2","b3"),
+               C1=c(1001.123,58.04,32.01),
+               C2=c(-0.00321, 0.0121, 0.325))
+
+saveOutput(df1, ofName="tab.1.csv",
+           caption="testing table w/o formatting info")
+
+saveOutput(qplot(1:10,1:10), ofName="fig.1.png",
+           caption="this is a testing plot")
+
+colWidth = "2,1,1,1"
+header = "A | A | C | C || A | A | C1 | C2"
+footer = "A|Arkansas$~ref$|1|header
+|| C1|Kansas$^ref$|x|header
+|| a|Arizona|2|body"
+rowHeaderInd = 2
+
+saveOutput(df1, ofName = "tab.2.csv",
+           caption = "testing table w/ formatting info",
+           header = header, footer = footer, colWidth = colWidth,
+           rowHeaderInd = rowHeaderInd)
+
+wfrFile=system.file("extdata", "example.table.2.csv", package = "wfr")
+df1 = read.csv(wfrFile,check.names = F)
+header="pathway | gene | batch A | batch A | batch A | batch B |
+        batch B | batch B | A vs B | A vs B | A vs B ||
+        pathway | gene | N | ΔCt Mean | ΔCt SEM | N |
+        ΔCt Mean | ΔCt SEM | LS mean | Fold change | p-value"
+footer="ΔCt Mean | ΔCt is calulated using median value as reference gene for each visit and patient,i.e., ΔCt = Ct - Ct$~median$ | a | header"
+
+saveOutput(df1, ofName="tab.3.csv",
+           caption="testing a complex table",
+           header=header, footer = footer,
+           rowHeaderInd = 1, maxTableWidth = 6.5)
+
+OUTPUTS[,"oPath"] = getwd()
+exFn="all.outputs.xlsx"
+
+# open the file to see its content.
+writeExcel(OUTPUTS,exFn)
+
+# Open the created Rmd files, change the output format "oFormat" to see if
+# all output formats work. Add a few headings so Table of Content can be
+# created and also see the effect of the docx reference template for docx
+# output.
+createRmd("all.outputs1.Rmd",exFn)
+
+# add additional formatting to all tables
+createRmd("all.outputs2.Rmd",exFn, tabPars="fontSize=12,theme='booktabs'")
+```
+
+
+

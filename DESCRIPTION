@@ -1,0 +1,20 @@
+Package: wfr
+Type: Package
+Title: A Workflow to Assist the Creation of Documents Containing Many Tables and Figures
+Version: 0.3.0
+Authors@R: c(person("Jike", "Cui", role = c("aut", "cre"),email = "jike.cui@sanofi.com"),
+             person("Wenfei", "Zhang", role = c("aut","ctb")),
+             person("Weiliang", "Qiu", role = c("aut","ctb")),
+             person("Jun", "Luo", role = c("aut","ctb")),
+             person("Liwei", "Wang", role = c("aut","ctb")),
+             person("Donghui", "Zhang", role = c("aut","ctb"))
+            ) 
+VignetteBuilder: knitr
+Description: Greatly reduces the amount of non-statistical work in conducting large data analysis projects using R and compiling reports containing many table and figures; specifically: 1) It provides a way to systematically record the output from the data analysis R script, even including format info if the output is a table. 2) It can automatically create the R markdown file to produce either DOCX, HTML, or PDF output. 3) Numeric columns of the tables in the report are formatted automatically and properly based on the distribution of the column.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.5.0), flextable (>= 0.5.5)
+Imports: utils, knitr, kableExtra, stringr, magrittr, captioner, officer, stats, ggplot2, openxlsx, xtable 
+Suggests: bookdown, pander, tinytex, webshot
+RoxygenNote: 6.1.1.9000
