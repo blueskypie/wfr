@@ -1,3 +1,7 @@
+<!-- badges: start -->
+  [![Travis build status](https://travis-ci.org/blueskypie/wfr.svg?branch=master)](https://travis-ci.org/blueskypie/wfr)
+  <!-- badges: end -->
+  
 # wfr
 A Workflow to Assist the Creation of Documents Containing Many Tables and Figures using R.
 

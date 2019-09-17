@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^cran-comments\.md$
 ^README\.pdf$
+^\.travis\.yml$
