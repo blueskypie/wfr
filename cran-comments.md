@@ -20,10 +20,10 @@ Here is the corresponding "Good Practice" section in [`attach`](https://www.rdoc
 > Good Practice
 attach has the side effect of altering the search path and this can easily lead to the wrong object of a particular name being found. People do often forget to detach databases.
 
-The warning and note are due to the following three consecutive lines of code in function `showObj`
+The NOTE is due to the following three consecutive lines of code in function `showObj`
 ```r
         attach(rImageFn,name="rImage", pos=2)
         obj1=get("OBJ2",pos = 2)
         detach(name="rImage", pos=2)
 ```
-This package gives the users option to save work image, and maybe later `attach` the image to retreive objects. The `attach` is quickly followed by a `detach`. So I hope it is OK.
+This package gives the users option to save work image, and maybe later `attach` the image to retreive objects. The `attach` is closely followed by a `detach`. So I hope it is OK.
