@@ -3,8 +3,10 @@
 ^cran-comments\.md$
 ^README\.pdf$
 ^README\.md$
+^NEWS\.md$
 ^\.travis\.yml$
 ^\.git$
 ^.gitignore$
 ^LICENSE$
 
+^CRAN-RELEASE$

@@ -27,7 +27,6 @@ sharedLibs <-c("knitr","pander","xtable","magrittr","flextable","officer","openx
 extraLibs = `if`(isDocx,c("captioner","stringr"),c("kableExtra"))
 loadLibs(c(sharedLibs,extraLibs))
 ```  
-
 `r if(oFormat=="html") setHtmlHeaderProperty()`
 
 # Acknowledgement
@@ -44,7 +43,7 @@ The primary purpose of this package is to help saving time for users of the foll
 * Using R to carry out large data analysis project with many outputs, e.g. tables and figures, to save and manage.
 * Using R markdown to create post-analysis documents containing many tables and figures from the first step.
 
-In addition, it ensures consist formatting of the tables and numbers in all such documents created by different people in an organization.
+In addition, it ensures consistent formatting of the tables and numbers in all such documents created by different people in an organization.
 
 # Background and Objective
 ## Non-statistical Work in Large Data Analysis Project
@@ -235,7 +234,7 @@ rmdTable(df1, caption = tCap("maxTableWidth is set as 7.0 inches (default)","tab
  `r tRef("tabSW2",isDocx)` sets `maxTableWith = 6.5`. The algorithm reduces font size by 1 to fit the table. Note that the font size of the table title and footer is not affected. The former has a minimum size 10, and the latter is set by `footerFontSize` in [rmdTable], which defaults at 9.
 
 ```{r tabSW2, echo=F}
-rmdTable(df1, caption = tCap("maxTableWidth is set as 6.5 inches ","tabSW2",isDocx),
+rmdTable(df1, caption = tCap("maxTableWidth is set as 6.5 inches","tabSW2",isDocx),
          maxTableWidth = 6.5,footer = footer,header = header,rowHeaderInd = 1, isDocx = isDocx)
 ```
 
@@ -361,6 +360,3 @@ createRmd("all.outputs1.Rmd",exFn)
 # add additional formatting to all tables
 createRmd("all.outputs2.Rmd",exFn, tabPars="fontSize=12,theme='booktabs'")
 ```
-
-
-
