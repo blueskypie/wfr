@@ -10,10 +10,10 @@ There were no ERRORs or WARNINGs, but 2 NOTEs.
 
 One NOTE is due to new submission. Below is the other NOTE:
 
-> checking R code for possible problems ... NOTE
-  Found the following calls to attach():
-  File ‘wfr/R/rmd.util.r’:
-    attach(rImageFn, name = "rImage", pos = 2)
+> checking R code for possible problems ... NOTE  
+  Found the following calls to attach():  
+  File ‘wfr/R/rmd.util.r’:  
+    attach(rImageFn, name = "rImage", pos = 2)  
   See section ‘Good practice’ in ‘?attach’.
 
 Here is the corresponding "Good Practice" section in [`attach`](https://www.rdocumentation.org/packages/base/versions/3.6.1/topics/attach):
