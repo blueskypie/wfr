@@ -1,14 +1,14 @@
 ## Test environments
+- win-builder (devel and release)
 - local Windows 10 install, R 3.5.1
 - CentOS Linux 7, R 3.6.0
+- ubuntu 12.04 (on travis-ci), R 3.1.2
+
 
 ## R CMD check results
-There were no ERRORs, 1 WARNINGs, and 2 NOTEs. 
+There were no ERRORs or WARNINGs, but 2 NOTEs. 
 
-One NOTE is due to new submission. The other WARNING and NOTE are same. See below:
-
-> checking whether package ‘wfr’ can be installed ... WARNING
-  See below...
+One NOTE is due to new submission. Below is the other NOTE:
 
 > checking R code for possible problems ... NOTE
   Found the following calls to attach():

@@ -2,4 +2,9 @@
 ^\.Rproj\.user$
 ^cran-comments\.md$
 ^README\.pdf$
+^README\.md$
 ^\.travis\.yml$
+^\.git$
+^.gitignore$
+^LICENSE$
+
