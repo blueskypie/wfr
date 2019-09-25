@@ -131,13 +131,17 @@ print(OBJ2)
 df1=data.frame(A=c("a","a","b3"),
                B=c("b1","b2","b3"),
                C1=1:3,C2=2:4)
-saveOutput(df1, ofName="tab.1.csv", caption="this is a testing table")
+\dontrun{
+  saveOutput(df1, ofName="tab.1.csv", caption="this is a testing table")
+}
 
 print(OFCOUNTER)
 print(OUTPUTS)
 print(OBJ2)
 
-saveOutput(qplot(1:10,1:10), ofName="fig.1.png", caption="this is a testing plot")
+\dontrun{
+  saveOutput(qplot(1:10,1:10), ofName="fig.1.png", caption="this is a testing plot")
+}
 
 print(OFCOUNTER)
 print(OUTPUTS)

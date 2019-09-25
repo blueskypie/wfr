@@ -54,19 +54,21 @@ none
 \code{\link{OUTPUTS}}, \code{\link{rmd.template}}
 }
 \examples{
-library(wfr)
-library(ggplot2)
+    library(wfr)
+    library(ggplot2)
 
-df1=data.frame(A=c("a","a","b3"),
-               B=c("b1","b2","b3"),
-               C1=1:3,C2=2:4)
-saveOutput(df1, ofName="tab.1.csv", caption="this is a testing table")
-saveOutput(qplot(1:10,1:10), ofName="fig.1.png", caption="this is a testing plot")
-OUTPUTS[,"oPath"] = getwd()
-exFn="all.outputs.xlsx"
-writeExcel(OUTPUTS,exFn)
+    df1=data.frame(A=c("a","a","b3"),
+                   B=c("b1","b2","b3"),
+                   C1=1:3,C2=2:4)
+    \dontrun{
+        saveOutput(df1, ofName="tab.1.csv", caption="this is a testing table")
+        saveOutput(qplot(1:10,1:10), ofName="fig.1.png", caption="this is a testing plot")
+        OUTPUTS[,"oPath"] = getwd()
+        exFn="all.outputs.xlsx"
+        writeExcel(OUTPUTS,exFn)
 
-createRmd("all.outputs.Rmd",exFn, tabPars="fontSize=12,theme='plain'")
+        createRmd("all.outputs.Rmd",exFn, tabPars="fontSize=12,theme='plain'")
+    }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -34,29 +34,31 @@ An object identified by \code{objID}, can be a ggplot2 or a table (flextable if 
 \code{\link{rmdTable}} \code{\link{OUTPUTS}}
 }
 \examples{
-library(wfr)
-library(ggplot2)
-isDocx=TRUE
+    library(wfr)
+    library(ggplot2)
+    isDocx=TRUE
 
-df1=data.frame(A=c("a","a","b3"),
-               B=c("b1","b2","b3"),
-               C1=1:3,C2=2:4)
-colWidth = "2,1,1,1"
-header = "A | A | C | C || A | A | C1 | C2"
-footer = "A|Arkansas$~ref$|1|header
-|| C1|Kansas$^ref$|x|header
-|| a|Arizona|2|body"
+    df1=data.frame(A=c("a","a","b3"),
+                   B=c("b1","b2","b3"),
+                   C1=1:3,C2=2:4)
+    colWidth = "2,1,1,1"
+    header = "A | A | C | C || A | A | C1 | C2"
+    footer = "A|Arkansas$~ref$|1|header
+    || C1|Kansas$^ref$|x|header
+    || a|Arizona|2|body"
 
-saveOutput(df1,"t1.csv",caption = "1st testing table",header = header,
-           footer = footer, colWidth = colWidth,fontSize = 12 )
-saveOutput(qplot(1:10,1:10),caption = "1st testing fig")
+    \dontrun{
+        saveOutput(df1,"t1.csv",caption = "1st testing table",header = header,
+                   footer = footer, colWidth = colWidth,fontSize = 12 )
+        saveOutput(qplot(1:10,1:10),caption = "1st testing fig")
 
-OUTPUTS[,"oPath"]=getwd()
-write.csv(OUTPUTS,"all.outputs.csv")
+        OUTPUTS[,"oPath"]=getwd()
+        write.csv(OUTPUTS,"all.outputs.csv")    
 
-oDf=read.csv("all.outputs.csv",stringsAsFactors = FALSE)
-showObj(oDf,isDocx,objID = "tab1",rowHeaderInd=2)
-showObj(oDf,objID = "fig2")
+        oDf=read.csv("all.outputs.csv",stringsAsFactors = FALSE)
+        showObj(oDf,isDocx,objID = "tab1",rowHeaderInd=2)
+        showObj(oDf,objID = "fig2")
+    }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
