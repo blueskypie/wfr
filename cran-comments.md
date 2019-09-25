@@ -26,4 +26,4 @@ The NOTE is due to the following three consecutive lines of code in function `sh
         obj1=get("OBJ2",pos = 2)
         detach(name="rImage", pos=2)
 ```
-This package gives the users option to save work image, and maybe later `attach` the image to retrieve objects. The `attach` is closely followed by a `detach`. So I hope it is OK.
+Seems the concern from the Good Practice is that **People do often forget to detach databases**, which is not the case here. The `attach` is closely followed by a `detach`. So I hope it is OK.
