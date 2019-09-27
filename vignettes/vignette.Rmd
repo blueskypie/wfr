@@ -41,7 +41,7 @@ Thanks to the authors of those excellent R package [flextable](https://davidgohe
 The primary purpose of this package is to help saving time for users of the following tasks:   
 
 * Using R to carry out large data analysis project with many outputs, e.g. tables and figures, to save and manage.
-* Using R markdown to create post-analysis documents containing many tables and figures from the first step.
+* Creating post-analysis documents containing many tables and figures from the first step.
 
 In addition, it ensures consistent formatting of the tables and numbers in all such documents created by different people in an organization.
 
@@ -302,8 +302,7 @@ install.packages(c("flextable","knitr","kableExtra","captioner","officer",
                    "openxlsx","bookdown", "pander"), dependencies=T)
                    
 # installation from source; add path to the file
-install.packages("wfr_0.3.0.tar.gz", repos = NULL, type="source",
-                 dependencies=T)
+devtools::install_github("blueskypie/wfr",dependencies=T)
 
 # testing
 library(wfr)
