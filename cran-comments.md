@@ -22,11 +22,11 @@ attach has the side effect of altering the search path and this can easily lead 
 
 The NOTE is due to the following three consecutive lines of code in function `showObj`
 ```r
-        attach(rImageFn,name="rImage", pos=2)
+        attach(rImageFn,name="rImage", pos=2)   # rImageFn: the file name of a workspace image saved in previous step.
         obj1=get("OBJ2",pos = 2)
         detach(name="rImage", pos=2)
 ```
-Seems the concern from the Good Practice is that **People do often forget to detach databases**, which clearly **is not** the case here. The `attach` is closely followed by a `detach`. So I hope it is OK.
+The concern from the Good Practice is that **People do often forget to detach databases**, which clearly **is not** the case here. The `attach` is closely followed by a `detach`. So I hope it is OK.
 
 ## Why I need to attach a workspace image just to read one object
 The function `saveOutput` in my package has a Boolean parameter `saveWorkspace`. If it's TRUE, the workspace image is saved; otherwise, only the _output_ is saveRDS-ed. Although other functions, e.g. the `showObj` which contains those three lines of code, only need the _output_, the users may want to keep the workspace image, where the _output_ is produced, for their OWN interest, that's why I provided the parameter 'saveWorkspace'.
