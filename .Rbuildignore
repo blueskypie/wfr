@@ -1,7 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^cran-comments\.md$
-^README\.pdf$
+^wfr\.vignette\.pdf$
+^wfr\.manual\.pdf$
 ^README\.md$
 ^NEWS\.md$
 ^\.travis\.yml$

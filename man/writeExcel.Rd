@@ -5,8 +5,8 @@
     Save the \code{\link{OUTPUTS}} to an Excel file
 }
 \description{
-    While writing the \code{\link{OUTPUTS}} to an Excel file, column \code{ofName} is embedded with
-    URL \code{file.path(df1[,"oPath"],df1[,"ofName"])}.
+    While writing the \code{\link{OUTPUTS}} to an Excel file, column \code{oFileName} is embedded with
+    URL \code{file.path(df1[,"oPath"],df1[,"oFileName"])}.
 }
 \usage{
 writeExcel(df1, fileName, ...)

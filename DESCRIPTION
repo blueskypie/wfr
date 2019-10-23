@@ -1,7 +1,7 @@
 Package: wfr
 Type: Package
 Title: A Workflow to Assist the Creation of Documents Containing Many Tables and Figures
-Version: 0.3.1
+Version: 0.4.0
 Authors@R: c(person("Jike", "Cui", role = c("aut", "cre"),email = "jike.cui@sanofi.com"),
              person("Wenfei", "Zhang", role = c("aut","ctb")),
              person("Weiliang", "Qiu", role = c("aut","ctb")),
@@ -16,7 +16,12 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.5.0), flextable (>= 0.5.5)
 Imports: utils, knitr, kableExtra, stringr, magrittr, captioner, officer, stats, ggplot2, openxlsx, xtable 
-Suggests: bookdown, pander, tinytex, webshot
+Suggests: 
+    bookdown,
+    pander,
+    tinytex,
+    webshot,
+    testthat
 RoxygenNote: 6.1.1.9000
 URL: http://github.com/blueskypie/wfr
 BugReports: http://github.com/blueskypie/wfr/issues

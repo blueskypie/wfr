@@ -28,7 +28,7 @@ createRmd(outputRmdFn, outputListFn, rmdTemplateFn =
     }
 
     \item{libs}{
-        (character, \code{"ggplot2"}) The names of the libraries needed to execute the object, which is actually \code{\link{OBJ2}}, displayed in each knitr code chunk
+        (character, \code{"ggplot2"}) The names of the libraries needed to execute the object displayed in each knitr code chunk
     }
 
     \item{tabPars}{
@@ -61,8 +61,8 @@ none
                    B=c("b1","b2","b3"),
                    C1=1:3,C2=2:4)
     \dontrun{
-        saveOutput(df1, ofName="tab.1.csv", caption="this is a testing table")
-        saveOutput(qplot(1:10,1:10), ofName="fig.1.png", caption="this is a testing plot")
+        saveOutput(df1, oFileName="tab.1.csv", caption="this is a testing table")
+        saveOutput(qplot(1:10,1:10), oFileName="fig.1.png", caption="this is a testing plot")
         OUTPUTS[,"oPath"] = getwd()
         exFn="all.outputs.xlsx"
         writeExcel(OUTPUTS,exFn)

@@ -9,7 +9,6 @@ vignette: >
   %\VignetteIndexEntry{wfr: A Workflow to Assist the Creation of Documents}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-
 ---
 
 
@@ -18,8 +17,6 @@ oFormat="html"
 knitr::opts_chunk$set(echo = F,message = F,warning = F,error=T,include = T,cache=F,fig.align="center",
                       fig.width = 10, fig.height=8, dpi = 300, 
                       out.width = ifelse(oFormat=="pdf","480pt","800px"))
-
-
 #isDocx = (oFormat!="html")
 isDocx=T
 library(wfr)
@@ -27,6 +24,7 @@ sharedLibs <-c("knitr","pander","xtable","magrittr","flextable","officer","openx
 extraLibs = `if`(isDocx,c("captioner","stringr"),c("kableExtra"))
 loadLibs(c(sharedLibs,extraLibs))
 ```  
+
 `r if(oFormat=="html") setHtmlHeaderProperty()`
 
 # Acknowledgement
@@ -49,7 +47,7 @@ In addition, it ensures consistent formatting of the tables and numbers in all s
 ## Non-statistical Work in Large Data Analysis Project
 Significant amount of effort spent in a data analysis task is non-statistical. 
 
-A large data analysis project can produce many outputs, e.g. tables and figure, that are reviewed later. Annotating and managing all outputs are time-consuming but very important for future query, review, and understanding.
+A large data analysis project can produce many outputs, e.g. tables and figures, which are reviewed later. Annotating and managing all outputs are time-consuming but very important for future query, review, and understanding.
 
 More importantly, in compiling reports for such projects, many of those output tables and figures are included. `r tRef("tab1",isDocx)` is one such example. If a report contains two dozen such tables, compiling, formatting, and cross-referencing those tables take lots of time.
 
@@ -79,13 +77,13 @@ knitr::include_graphics(system.file("extdata", "workflow.png", package = "wfr"))
 #knitr::include_graphics("../inst/extdata/workflow.png")
 ```  
 
-1. In the data analysis R script, use `saveOutput()` to save each object you want to keep with a caption to explain what the object is. `saveOutput` saves either the current R workspace or the rds file of the object, depending on the flag `saveWorkspace`. A text or picture file, e.g. `csv` or `png`, of the object can also be saved via `ofName`. A number of formating options, if the object is a table, can also be saved through corresponding parameters of `saveOutput`.  
+1. In the data analysis R script, use `saveOutput()` to save each object you want to keep with a caption to explain what the object is. `saveOutput` saves either the current R workspace or the rds file of the object, depending on the flag `saveWorkspace`. A text or picture file, e.g. `csv` or `png`, of the object can also be saved via `oFileName`. A number of formating options, if the object is a table, can also be saved through corresponding parameters of `saveOutput`.  
 
    `saveOutput` also enters all those information into a global data.frame, `OUTPUTS`, which is saved as an excel file at the end of R script.
 
 2. The file explorer shows all the saved files and the excel file.
 
-3. The content of the excel file can be manually edited. The `ofName` cells are imbedded with links to the file, and clicking opens the files directly.
+3. The content of the excel file can be manually edited. The `oFileName` cells are imbedded with links to the file, and clicking opens the files directly.
 
 4. Run function `createRmd()` to produce the Rmd file for the report in either html or docx format. `wfr` package provides a R markdown template file that can output docx, html, or pdf format depending by setting `oFormat` in the file. Appending to this Rmd template file, `createRmd` firstly adds a code chunk to read in the excel file, then one code chunk per row of the excel file for cross reference and display of the object in the row. If the object is a table, its numerical columns are automatically formatted based on the min, max, and median values of the column by [num2formattedStr]. Also see [showObj] for details on how it displays an object.
 
@@ -299,7 +297,7 @@ webshot::install_phantomjs()
 Run the following code for a simple testing.
 ```{#numCode .R .numberLines}
 install.packages(c("flextable","knitr","kableExtra","captioner","officer",
-                   "openxlsx","bookdown", "pander"), dependencies=T)
+                   "openxlsx","bookdown", "pander","devtools"), dependencies=T)
                    
 # installation from source; add path to the file
 devtools::install_github("blueskypie/wfr",dependencies=T)
@@ -308,15 +306,16 @@ devtools::install_github("blueskypie/wfr",dependencies=T)
 library(wfr)
 library(ggplot2)
 
+OFCOUNTER=1
 df1=data.frame(A=c("a","a","b3"),
                B=c("b1","b2","b3"),
                C1=c(1001.123,58.04,32.01),
                C2=c(-0.00321, 0.0121, 0.325))
 
-saveOutput(df1, ofName="tab.1.csv",
+saveOutput(df1, oFileName="tab.1.csv",
            caption="testing table w/o formatting info")
 
-saveOutput(qplot(1:10,1:10), ofName="fig.1.png",
+saveOutput(qplot(1:10,1:10), oFileName="fig.1.png",
            caption="this is a testing plot")
 
 colWidth = "2,1,1,1"
@@ -326,7 +325,7 @@ footer = "A|Arkansas$~ref$|1|header
 || a|Arizona|2|body"
 rowHeaderInd = 2
 
-saveOutput(df1, ofName = "tab.2.csv",
+saveOutput(df1, oFileName = "tab.2.csv",
            caption = "testing table w/ formatting info",
            header = header, footer = footer, colWidth = colWidth,
            rowHeaderInd = rowHeaderInd)
@@ -339,7 +338,7 @@ header="pathway | gene | batch A | batch A | batch A | batch B |
         ΔCt Mean | ΔCt SEM | LS mean | Fold change | p-value"
 footer="ΔCt Mean | ΔCt is calulated using median value as reference gene for each visit and patient,i.e., ΔCt = Ct - Ct$~median$ | a | header"
 
-saveOutput(df1, ofName="tab.3.csv",
+saveOutput(df1, oFileName="tab.3.csv",
            caption="testing a complex table",
            header=header, footer = footer,
            rowHeaderInd = 1, maxTableWidth = 6.5)
@@ -359,3 +358,6 @@ createRmd("all.outputs1.Rmd",exFn)
 # add additional formatting to all tables
 createRmd("all.outputs2.Rmd",exFn, tabPars="fontSize=12,theme='booktabs'")
 ```
+
+
+
