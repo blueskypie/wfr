@@ -9,13 +9,10 @@
     URL \code{file.path(df1[,"oPath"],df1[,"oFileName"])}.
 }
 \usage{
-writeExcel(df1, fileName, ...)
+writeExcel(fileName, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-    \item{df1}{
-        (data frame or matrix) Used to hold the value of \code{\link{OUTPUTS}}
-    }
     \item{fileName}{
         (character) The name of the Excel file with extension 'xlsx'
     }
@@ -54,12 +51,11 @@ none
     saveOutput(df1,"t1.csv",caption = "1st testing table",header = header,
                footer = footer,colWidth = colWidth,fontSize = 12 )
 
-    OUTPUTS[,"oPath"]=getwd()
     fn1="output.xlsx"
-    writeExcel(OUTPUTS,fn1)
+    writeExcel(fn1)
     df2=read.xlsx(fn1)
   }
-  
+
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

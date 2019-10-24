@@ -343,11 +343,9 @@ saveOutput(df1, oFileName="tab.3.csv",
            header=header, footer = footer,
            rowHeaderInd = 1, maxTableWidth = 6.5)
 
-OUTPUTS[,"oPath"] = getwd()
 exFn="all.outputs.xlsx"
-
 # open the file to see its content.
-writeExcel(OUTPUTS,exFn)
+writeExcel(exFn)
 
 # Open the created Rmd files, change the output format "oFormat" to see if
 # all output formats work. Add a few headings so Table of Content can be
