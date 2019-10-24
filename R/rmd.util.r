@@ -5,13 +5,25 @@
 OUTPUTS=data.frame()
 OFCOUNTER=1
 
-saveOutput=function(obj,oFileName=NA,saveWorkspace=F,oPath='.',caption=NA,rmdInd=NA, eval=T,objID=NA,header=NA,
+saveWfrInfo=function(rdsFileName){
+    saveRDS(list(ofc=OFCOUNTER,outp=OUTPUTS),file = rdsFileName)
+}
+
+restoreWfrInfo=function(rdsFileName){
+    info1=readRDS(rdsFileName)
+    pEnv <- parent.frame()
+    assign('OFCOUNTER',info1$ofc,pEnv)
+    assign('OUTPUTS',info1$outp,pEnv)
+}
+
+saveOutput=function(obj,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=NA,rmdInd=NA, eval=T,objID=NA,header=NA,
                     footer=NA,rowHeaderInd=NA,colWidths=NA,fontSize=11,nRowScroll = 20,
                     nRowDisplay = 200, maxTableWidth = 7.2, theme = "zebra",...){
     pEnv <- parent.frame()
     #pEnv=globalenv()
     counter2=get('OFCOUNTER',pEnv)
     counterStr=sprintf("%03d", counter2)
+
     if(!is.null(obj)){
         if(is.na(rmdInd)){
             rmdInd=counter2
@@ -21,8 +33,12 @@ saveOutput=function(obj,oFileName=NA,saveWorkspace=F,oPath='.',caption=NA,rmdInd
             dirName=dirname(oFileName)
             oBaseName=paste0(counterStr,'.',basename(oFileName))
 
-            if(dirName!='.'){
-                oPath=dirName
+            if(dirName!='.'){ #contains path
+                if(substr(dirName,1,2)==paste0('.',.Platform$file.sep)){ # rative path ./pp/kk.txt
+                    oPath=file.path(getwd(),substr(dirName,3,nchar(dirName)))
+                }else{ # absolute path
+                    oPath=dirName
+                }
             }
         }
 
@@ -89,8 +105,10 @@ saveOutput=function(obj,oFileName=NA,saveWorkspace=F,oPath='.',caption=NA,rmdInd
 }
 
 
-writeExcel=function(df1,fileName,...){
+writeExcel=function(fileName,...){
     #library(openxlsx)
+    pEnv <- parent.frame()
+    df1=get('OUTPUTS',pEnv)
     urls=file.path(df1[,"oPath"],df1[,"oFileName"])
     names(df1[,"oFileName"])=urls
     class(df1[,"oFileName"])="hyperlink"
