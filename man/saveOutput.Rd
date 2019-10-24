@@ -8,7 +8,7 @@ Save the current R image or the object rds file and add its information to the m
 Save the current R image or the object rds file and optionally other formats of the object (e.g. csv for tables and png for figures), its caption, and other inforamtion related to its appearance in the R markdown file, to the matrix OUTPUTS
 }
 \usage{
-saveOutput(obj,oFileName=NA, saveWorkspace=F, oPath='.', caption=NA ,
+saveOutput(obj,oFileName=NA, saveWorkspace=F, oPath=getwd(), caption=NA ,
            rmdInd=NA, eval=T,objID=NA, header=NA, footer=NA,
            rowHeaderInd=NA, colWidths=NA, fontSize=11, nRowScroll = 20,
            nRowDisplay = 200, maxTableWidth = 7.2, theme = "zebra",...)
@@ -21,7 +21,7 @@ saveOutput(obj,oFileName=NA, saveWorkspace=F, oPath='.', caption=NA ,
   }
 
   \item{oFileName}{
-    (character, NA). The file name of the text (e.g. csv) or image (e.g. png) file of the \code{obj} to save.
+    (character, NA). The file name of the text (e.g. csv) or image (e.g. png) file of the \code{obj} to save. Use, e.g. \code{./path1/my.csv}, instead of \code{path1/my.csv} to include a relative path into the file name. If \code{oFileName} contains either a relative or absolute path, the \code{oPath} will be replaced by the whole path.
   }
 
   \item{saveWorkspace}{
@@ -36,7 +36,7 @@ saveOutput(obj,oFileName=NA, saveWorkspace=F, oPath='.', caption=NA ,
 
 
   \item{oPath}{
-    (character, '.'). The output path.
+    (character, getwd()). The output path.
   }
 
   \item{caption}{
