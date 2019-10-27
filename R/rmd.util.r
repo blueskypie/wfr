@@ -6,7 +6,8 @@ OUTPUTS=data.frame()
 OFCOUNTER=1
 
 saveWfrInfo=function(rdsFileName){
-    saveRDS(list(ofc=OFCOUNTER,outp=OUTPUTS),file = rdsFileName)
+    pEnv <- parent.frame()
+    saveRDS(list(ofc=get('OFCOUNTER',pEnv),outp=pEnv$OUTPUTS),file = rdsFileName)
 }
 
 restoreWfrInfo=function(rdsFileName){
