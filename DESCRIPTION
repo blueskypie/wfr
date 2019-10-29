@@ -1,7 +1,7 @@
 Package: wfr
 Type: Package
 Title: A Workflow to Assist the Creation of Documents Containing Many Tables and Figures
-Version: 0.4.3
+Version: 0.4.4
 Authors@R: c(person("Jike", "Cui", role = c("aut", "cre"),email = "jike.cui@sanofi.com"),
              person("Wenfei", "Zhang", role = c("aut","ctb")),
              person("Weiliang", "Qiu", role = c("aut","ctb")),

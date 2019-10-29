@@ -46,7 +46,7 @@ saveOutput=function(obj,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=NA,rm
         objPref=NULL
         if(is.data.frame(obj) || is.matrix(obj)){
             if(!is.na(oFileName)){
-                write.csv(obj, file=file.path(oPath,oBaseName),quote=F,row.names=F,...)
+                write.csv(obj, file=file.path(oPath,oBaseName),...)
             }
 
             objPref='tab'
@@ -85,7 +85,7 @@ saveOutput=function(obj,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=NA,rm
         saveRDS(obj, file.path(oPath, rdsFn))
 
 
-        if(nrow(pEnv$OUTPUTS)>0 && objID %in% pEnv$OUTPUTS[,"objID"]){
+        if(nrow(pEnv$OUTPUTS)>0 && objID %in% pEnv$OUTPUTS[1:(OFCOUNTER-1),"objID"]){
             warning("duplicate objID, OFCOUNTER is appended.")
             objID=paste0(objID,counter2)
         }
@@ -94,7 +94,7 @@ saveOutput=function(obj,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=NA,rm
                   rmdInd=rmdInd, eval=eval, objID=objID, header=header, footer=footer,
                   rowHeaderInd=rowHeaderInd, colWidths=colWidths, fontSize=fontSize, nRowScroll = nRowScroll,
                   nRowDisplay = nRowDisplay, maxTableWidth = maxTableWidth, theme = theme)
-        pEnv$OUTPUTS=rbind.data.frame(pEnv$OUTPUTS,row1,stringsAsFactors = F)
+        pEnv$OUTPUTS=rbind.data.frame(pEnv$OUTPUTS[1:(OFCOUNTER-1),],row1,stringsAsFactors = F)
 
         #OFCOUNTER <- OFCOUNTER + 1
         assign('OFCOUNTER',counter2 + 1,pEnv)
