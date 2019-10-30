@@ -17,64 +17,68 @@ restoreWfrInfo=function(rdsFileName){
     assign('OUTPUTS',info1$outp,pEnv)
 }
 
-saveOutput=function(obj,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=NA,rmdInd=NA, eval=T,objID=NA,header=NA,
+saveOutput=function(obj=NULL,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=NA,rmdInd=NA, eval=T,objID=NA,header=NA,
                     footer=NA,rowHeaderInd=NA,colWidths=NA,fontSize=11,nRowScroll = 20,
                     nRowDisplay = 200, maxTableWidth = 7.2, theme = "zebra",...){
+    if(is.null(obj) && is.na(oFileName)){
+        stop("both obj and oFileName are empty!")
+    }
+
     pEnv <- parent.frame()
     #pEnv=globalenv()
     counter2=get('OFCOUNTER',pEnv)
     counterStr=sprintf("%03d", counter2)
 
-    if(!is.null(obj)){
-        if(is.na(rmdInd)){
-            rmdInd=counter2
-        }
+    if(is.na(rmdInd)){
+        rmdInd=counter2
+    }
 
+    if(!is.na(oFileName)){
+        dirName=dirname(oFileName)
+        oBaseName=paste0(counterStr,'.',basename(oFileName))
+
+        if(dirName!='.'){ #contains path
+            if(substr(dirName,1,2)==paste0('.',.Platform$file.sep)){ # rative path ./pp/kk.txt
+                oPath=file.path(getwd(),substr(dirName,3,nchar(dirName)))
+            }else{ # absolute path
+                oPath=dirName
+            }
+        }
+    }
+
+    objPref=NULL
+    if(is.data.frame(obj) || is.matrix(obj)){
         if(!is.na(oFileName)){
-            dirName=dirname(oFileName)
-            oBaseName=paste0(counterStr,'.',basename(oFileName))
-
-            if(dirName!='.'){ #contains path
-                if(substr(dirName,1,2)==paste0('.',.Platform$file.sep)){ # rative path ./pp/kk.txt
-                    oPath=file.path(getwd(),substr(dirName,3,nchar(dirName)))
-                }else{ # absolute path
-                    oPath=dirName
-                }
-            }
+            write.csv(obj, file=file.path(oPath,oBaseName),...)
         }
 
-        objPref=NULL
-        if(is.data.frame(obj) || is.matrix(obj)){
-            if(!is.na(oFileName)){
-                write.csv(obj, file=file.path(oPath,oBaseName),...)
-            }
+        objPref='tab'
+    }else if(is.ggplot(obj)){
+        if(!is.na(oFileName)){
+            ggsave(file.path(oPath,oBaseName),obj,dpi=600)
+        }
 
-            objPref='tab'
-        }else if(is.ggplot(obj)){
-            if(!is.na(oFileName)){
-                ggsave(file.path(oPath,oBaseName),obj,dpi=600)
-            }
+        objPref='fig'
+        nRowScroll=nRowDisplay=maxTableWidth=theme=NA
+    }else if(!is.null(obj)){
+        warning("the obj is not a table or ggplot!, saving r.image only")
+    }
 
-            objPref='fig'
-            nRowScroll=nRowDisplay=maxTableWidth=theme=NA
+    if(!is.null(objPref)){
+        if(is.na(objID)){
+            objID=paste0(objPref,counter2)
         }else{
-            warning("the obj is not a table or ggplot!, saving r.image only")
+            objID=gsub("[^A-Za-z0-9]","",objID)
+            objID=paste0(objPref,objID)
         }
+    }
 
-        if(!is.null(objPref)){
-            if(is.na(objID)){
-                objID=paste0(objPref,counter2)
-            }else{
-                objID=gsub("[^A-Za-z0-9]","",objID)
-                objID=paste0(objPref,objID)
-            }
-        }
+    if(saveWorkspace){
+        rImageFileName=paste0(counterStr,'.r.image.rdata')
+        save.image(file.path(oPath,rImageFileName))
+    }
 
-        if(saveWorkspace){
-            rImageFileName=paste0(counterStr,'.r.image.rdata')
-            save.image(file.path(oPath,rImageFileName))
-        }
-
+    if(!is.null(obj)){
         if (!is.na(oFileName)) {
             ofNameToken = unlist(strsplit(oBaseName, '.', T))
             ofNamePrefix = paste(ofNameToken[-length(ofNameToken)], collapse = '.')
@@ -83,26 +87,23 @@ saveOutput=function(obj,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=NA,rm
             rdsFn = paste0(counterStr, '.rds')
         }
         saveRDS(obj, file.path(oPath, rdsFn))
-
-
-        if(nrow(pEnv$OUTPUTS)>0 && objID %in% pEnv$OUTPUTS[1:(OFCOUNTER-1),"objID"]){
-            warning("duplicate objID, OFCOUNTER is appended.")
-            objID=paste0(objID,counter2)
-        }
-
-        row1=list(oPath=oPath, rdsFileName=rdsFn, oFileName=oBaseName, caption=caption,
-                  rmdInd=rmdInd, eval=eval, objID=objID, header=header, footer=footer,
-                  rowHeaderInd=rowHeaderInd, colWidths=colWidths, fontSize=fontSize, nRowScroll = nRowScroll,
-                  nRowDisplay = nRowDisplay, maxTableWidth = maxTableWidth, theme = theme)
-        pEnv$OUTPUTS=rbind.data.frame(pEnv$OUTPUTS[1:(OFCOUNTER-1),],row1,stringsAsFactors = F)
-
-        #OFCOUNTER <- OFCOUNTER + 1
-        assign('OFCOUNTER',counter2 + 1,pEnv)
-
-        cat('------------------------------finish', rdsFn,"\n")
-    }else{
-        stop("obj is NULL")
     }
+
+    if(nrow(pEnv$OUTPUTS)>0 && objID %in% pEnv$OUTPUTS[1:(OFCOUNTER-1),"objID"]){
+        warning("duplicate objID, OFCOUNTER is appended.")
+        objID=paste0(objID,counter2)
+    }
+
+    row1=list(oPath=oPath, rdsFileName=rdsFn, oFileName=oBaseName, caption=caption,
+              rmdInd=rmdInd, eval=eval, objID=objID, header=header, footer=footer,
+              rowHeaderInd=rowHeaderInd, colWidths=colWidths, fontSize=fontSize, nRowScroll = nRowScroll,
+              nRowDisplay = nRowDisplay, maxTableWidth = maxTableWidth, theme = theme)
+    pEnv$OUTPUTS=rbind.data.frame(pEnv$OUTPUTS[1:(OFCOUNTER-1),],row1,stringsAsFactors = F)
+
+    #OFCOUNTER <- OFCOUNTER + 1
+    assign('OFCOUNTER',counter2 + 1,pEnv)
+
+    cat('------------------------------finish', rdsFn,"\n")
 }
 
 
