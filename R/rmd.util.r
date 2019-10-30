@@ -78,6 +78,7 @@ saveOutput=function(obj=NULL,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=
         save.image(file.path(oPath,rImageFileName))
     }
 
+    rdsFn=NA
     if(!is.null(obj)){
         if (!is.na(oFileName)) {
             ofNameToken = unlist(strsplit(oBaseName, '.', T))
@@ -998,8 +999,13 @@ showObj=function(oDf,objID=NULL,isDocx=F,...){
         objID=opts_current$get("label")
     }
     oInd=which(oDf[,"objID"]==objID)
-    rImageFn = file.path(oDf[oInd,"oPath"],oDf[oInd,"rdsFileName"])
-    obj1=readRDS(rImageFn)
+    if(!is.na(oDf[oInd,"rdsFileName"])){
+        rdsFn = file.path(oDf[oInd,"oPath"],oDf[oInd,"rdsFileName"])
+        obj1=readRDS(rdsFn)
+    }else{
+        obj1=file.path(oDf[oInd,"oPath"],oDf[oInd,"oFileName"])
+    }
+
 
     tabProp=intersect(names(formals(rmdTable)),colnames(oDf))
     propVal=as.list(oDf[oInd,tabProp])
@@ -1019,7 +1025,11 @@ showObj=function(oDf,objID=NULL,isDocx=F,...){
         if(exists("opts_current")){
             opts_current$set(fig.cap=propVal$caption)
         }
-        obj1
+        if(is.character(obj1)){
+            knitr::include_graphics(obj1)
+        }else{
+            obj1
+        }
     }
 }
 
