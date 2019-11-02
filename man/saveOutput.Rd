@@ -5,10 +5,10 @@
 Save the current R image or the object rds file and add its information to the matrix OUTPUTS
 }
 \description{
-Save the current R image or the object rds file and optionally other formats of the object (e.g. csv for tables and png for figures), its caption, and other inforamtion related to its appearance in the R markdown file, to the matrix OUTPUTS
+Save the current R image or the object rds file and optionally other formats of the object (e.g. csv for tables and png for figures), its caption, and other information related to its appearance in the R markdown file, to the matrix OUTPUTS
 }
 \usage{
-saveOutput(obj,oFileName=NA, saveWorkspace=F, oPath=getwd(), caption=NA ,
+saveOutput(obj=NULL,oFileName=NA, saveWorkspace=F, oPath=getwd(), caption=NA ,
            rmdInd=NA, eval=T,objID=NA, header=NA, footer=NA,
            rowHeaderInd=NA, colWidths=NA, fontSize=11, nRowScroll = 20,
            nRowDisplay = 200, maxTableWidth = 7.2, theme = "zebra",...)
@@ -17,7 +17,7 @@ saveOutput(obj,oFileName=NA, saveWorkspace=F, oPath=getwd(), caption=NA ,
 
 \arguments{
    \item{obj}{
-    The target object, usually a data.frame or ggplot object.
+    The target object, usually a data.frame or ggplot object. If \code{NULL}, \code{oFileName} can be used to insert an existing figure file into \code{OUTPUTS}, so that the figure file can be auto-included into the Rmd file produced by \code{\link{createRmd}} function.
   }
 
   \item{oFileName}{
@@ -78,7 +78,7 @@ saveOutput(obj,oFileName=NA, saveWorkspace=F, oPath=getwd(), caption=NA ,
 
 
 \details{
-For the simpilicity of coding, two global variables are created for this function:
+For the simplicity of coding, two global variables are created for this function:
 \itemize{
     \item{OFCOUNTER}{
     (integer,1). A global variable to count the number of outputs, initial value is 1.

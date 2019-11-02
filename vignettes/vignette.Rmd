@@ -27,7 +27,7 @@ loadLibs(c(sharedLibs,extraLibs))
 
 `r if(oFormat=="html") setHtmlHeaderProperty()`
 
-# Acknowledgement
+# Acknowledgment
 The development of this workflow is inspired by Dr. Wenfei Zhang's previous work in separating data analysis from document creation - saving analysis results in R script and including those results in a R markdown file for document generation.
 
 This work was supervised by Dr. Donghui Zhang at Sanofi.
@@ -70,7 +70,7 @@ So the objective of this package is to help to reduce the portion of non-statist
 
 
 # The Workflow
-Figure \@ref(fig:figWF) includes four pictures dispicting the proposed workflow in conducting data analysis project:
+Figure \@ref(fig:figWF) includes four pictures depicting the proposed workflow in conducting data analysis project:
 
 ```{r figWF, fig.cap="Proposed workflow from R script to Rmd file"}
 knitr::include_graphics(system.file("extdata", "workflow.png", package = "wfr"))
@@ -92,7 +92,7 @@ Based on this auto-generated Rmd file, users can focus on the text part of the r
 
 # Specific Functions
 ## showObj
-It displays an object in knitr code chunk and set the caption with cross reference. Figure \@ref(fig:figSO) dispicts how it works:
+It displays an object in knitr code chunk and set the caption with cross reference. Figure \@ref(fig:figSO) depicts how it works:
 
 ```{r figSO, fig.cap="Under the hood of `showObj`"}
 knitr::include_graphics(system.file("extdata", "showObj.PNG", package = "wfr"))
@@ -177,7 +177,7 @@ When `flextable` is used, that is, when the output format of the Rmd file is Wor
 * To use `rmdTable`, parameter `caption` should be set as `tCap(original.caption,"label",isDocx)` to enable cross reference in caption, e.g. `caption = tCap("Age and Sex statistics","tab1",isDocx)` for `r tRef("tab1", isDocx)`.
 
 ## num2formattedStr
-Each numerical column of the `dataDf` in `rmdTable` is formatted automatically by funtion `num2formattedSt`. This function makes decision on the following four aspects of formatting based on the min, median, max values of a numeric vector, so that the formatted numbers carry enough information and are in a length less than 10 characters. For example, for a numeric vector `v`, if `median(abs(v)) > 100`, it makes no sense to keep decimal digits.
+Each numerical column of the `dataDf` in `rmdTable` is formatted automatically by function `num2formattedSt`. This function makes decision on the following four aspects of formatting based on the min, median, max values of a numeric vector, so that the formatted numbers carry enough information and are in a length less than 10 characters. For example, for a numeric vector `v`, if `median(abs(v)) > 100`, it makes no sense to keep decimal digits.
 
 * number of sinificant digits
 * number of decimal points

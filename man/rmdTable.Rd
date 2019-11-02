@@ -70,7 +70,7 @@ setFlexTableFontSize(ft,fontSize,footerFontSize=9)
     }
 
     \item{rowHeaderInd}{
-        (integer, NULL). Row headers are the columns in the left of table body serving as headers for rows in the table body. \code{rowHeaderInd} are the last index of those columns, so the column indices of row headers is \code{1:rowHeaderInd}. If \code{rowHeaderInd} is specified, the font of row header becames bold, and neighboring cells of identical content are collapsed. The merge can be both horizontal and vertical in \code{myFlexTable}, and only vertical in \code{myKable}.
+        (integer, NULL). Row headers are the columns in the left of table body serving as headers for rows in the table body. \code{rowHeaderInd} are the last index of those columns, so the column indices of row headers is \code{1:rowHeaderInd}. If \code{rowHeaderInd} is specified, the font of row header becomes bold, and neighboring cells of identical content are collapsed. The merge can be both horizontal and vertical in \code{myFlexTable}, and only vertical in \code{myKable}.
     }
 
     \item{mergeBodyColumn}{
@@ -82,11 +82,11 @@ setFlexTableFontSize(ft,fontSize,footerFontSize=9)
     }
 
     \item{nRowScroll}{
-        (integer, 20) For \code{myKable} only, the cutoff on nuber of rows to apply a scroll window.
+        (integer, 20) For \code{myKable} only, the cutoff on number of rows to apply a scroll window.
     }
 
     \item{nRowDisplay}{
-        (integer, 200) For \code{myFlexTable} only, the cutoff on nuber of rows to display. If there are more than \code{nRowDisplay} rows in the table, the caption of the table is appended "(top \code{nRowDisplay} rows only)".
+        (integer, 200) For \code{myFlexTable} only, the cutoff on number of rows to display. If there are more than \code{nRowDisplay} rows in the table, the caption of the table is appended "(top \code{nRowDisplay} rows only)".
     }
 
     \item{theme}{

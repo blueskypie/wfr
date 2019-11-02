@@ -20,7 +20,7 @@ num2formattedStr(v)
 \details{
 \code{isVecNumeric} determines whether a vector, numeric or not, contains numbers only. This function is used because often numeric columns are accidently formatted as character or factor classes. If TRUE from \code{isVecNumeric}, \code{num2formattedStr} makes decision on the following four aspects of formatting based on the min, median, max values of the vector, so that the formatted numbers carry enough information and are in a length less than 10 characters.
 \itemize{
-    \item number of sinificant digits
+    \item number of significant digits
     \item number of decimal points
     \item whether to apply 1000 separator ','
     \item whether to apply scientific notation

@@ -27,7 +27,10 @@ saveOutput=function(obj=NULL,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=
     pEnv <- parent.frame()
     #pEnv=globalenv()
     counter2=get('OFCOUNTER',pEnv)
-    counterStr=sprintf("%03d", counter2)
+    counterStr=NULL
+    if(!is.null(obj)){
+        counterStr=paste0(sprintf("%03d", counter2),'.')
+    }
 
     if(is.na(rmdInd)){
         rmdInd=counter2
@@ -35,7 +38,7 @@ saveOutput=function(obj=NULL,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=
 
     if(!is.na(oFileName)){
         dirName=dirname(oFileName)
-        oBaseName=paste0(counterStr,'.',basename(oFileName))
+        oBaseName=paste0(counterStr,basename(oFileName))
 
         if(dirName!='.'){ #contains path
             if(substr(dirName,1,2)==paste0('.',.Platform$file.sep)){ # rative path ./pp/kk.txt
@@ -47,6 +50,11 @@ saveOutput=function(obj=NULL,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=
     }
 
     objPref=NULL
+    if(!is.na(oFileName)){
+        tokens1=unlist(strsplit(oFileName,'.',T))
+        objPref=tokens1[length(tokens1)]
+    }
+
     if(is.data.frame(obj) || is.matrix(obj)){
         if(!is.na(oFileName)){
             write.csv(obj, file=file.path(oPath,oBaseName),...)
@@ -74,7 +82,7 @@ saveOutput=function(obj=NULL,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=
     }
 
     if(saveWorkspace){
-        rImageFileName=paste0(counterStr,'.r.image.rdata')
+        rImageFileName=paste0(counterStr,'r.image.rdata')
         save.image(file.path(oPath,rImageFileName))
     }
 
@@ -85,12 +93,12 @@ saveOutput=function(obj=NULL,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=
             ofNamePrefix = paste(ofNameToken[-length(ofNameToken)], collapse = '.')
             rdsFn = paste0(ofNamePrefix, '.rds')
         } else{
-            rdsFn = paste0(counterStr, '.rds')
+            rdsFn = paste0(counterStr, 'rds')
         }
         saveRDS(obj, file.path(oPath, rdsFn))
     }
 
-    if(nrow(pEnv$OUTPUTS)>0 && objID %in% pEnv$OUTPUTS[1:(OFCOUNTER-1),"objID"]){
+    if(nrow(pEnv$OUTPUTS)>0 && objID %in% pEnv$OUTPUTS[1:(counter2-1),"objID"]){
         warning("duplicate objID, OFCOUNTER is appended.")
         objID=paste0(objID,counter2)
     }
@@ -99,12 +107,12 @@ saveOutput=function(obj=NULL,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=
               rmdInd=rmdInd, eval=eval, objID=objID, header=header, footer=footer,
               rowHeaderInd=rowHeaderInd, colWidths=colWidths, fontSize=fontSize, nRowScroll = nRowScroll,
               nRowDisplay = nRowDisplay, maxTableWidth = maxTableWidth, theme = theme)
-    pEnv$OUTPUTS=rbind.data.frame(pEnv$OUTPUTS[1:(OFCOUNTER-1),],row1,stringsAsFactors = F)
+    pEnv$OUTPUTS=rbind.data.frame(pEnv$OUTPUTS[1:(counter2-1),],row1,stringsAsFactors = F)
 
     #OFCOUNTER <- OFCOUNTER + 1
     assign('OFCOUNTER',counter2 + 1,pEnv)
 
-    cat('------------------------------finish', rdsFn,"\n")
+    cat('------------------------------finish', ifelse(is.na(rdsFn),oFileName,rdsFn),"\n")
 }
 
 

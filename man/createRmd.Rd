@@ -19,7 +19,7 @@ createRmd(outputRmdFn, outputListFn, rmdTemplateFn =
     }
 
     \item{outputListFn}{
-        (character) The file name of the text file containg the table from \code{\link{OUTPUTS}}
+        (character) The file name of the text file containing the table from \code{\link{OUTPUTS}}
     }
 
     \item{rmdTemplateFn}{

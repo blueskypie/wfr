@@ -22,7 +22,7 @@ showObj(oDf,objID=NULL,isDocx=F,...)
         (character, NULL) The objID of the object in \code{oDf}. If NULL, it is assigned the \code{label} of the code chunk. But when running the code chunk alone, e.g. for debugging, the \code{label} is not accessible and must be explicitly supplied.
     }
     \item{...}{
-        parameters passed to \code{\link{rmdTable}} to define table properties. Unsupplied properties are taken from the corresponding columns on the row identifed by \code{objID}, if those cells are not \code{NA}.
+        parameters passed to \code{\link{rmdTable}} to define table properties. Unsupplied properties are taken from the corresponding columns on the row identified by \code{objID}, if those cells are not \code{NA}.
     }
 }
 \value{
@@ -53,7 +53,7 @@ An object identified by \code{objID}, can be a ggplot2 or a table (flextable if 
         saveOutput(qplot(1:10,1:10),caption = "1st testing fig")
 
         OUTPUTS[,"oPath"]=getwd()
-        write.csv(OUTPUTS,"all.outputs.csv")    
+        write.csv(OUTPUTS,"all.outputs.csv")
 
         oDf=read.csv("all.outputs.csv",stringsAsFactors = FALSE)
         showObj(oDf,isDocx,objID = "tab1",rowHeaderInd=2)

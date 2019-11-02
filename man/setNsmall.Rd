@@ -5,7 +5,7 @@
 Set the nSmall of a number, and convert it to character
 }
 \description{
-set the nsmall, i.e. nubmer of decimal points, of a number, and convert it to character;  1000 separator ',' is added if \code{max(abs(v)) > 999}.
+set the nsmall, i.e. number of decimal points, of a number, and convert it to character;  1000 separator ',' is added if \code{max(abs(v)) > 999}.
 }
 \usage{
 setNsmall(v, nSmall)
@@ -17,7 +17,7 @@ setNsmall(v, nSmall)
     }
 
     \item{nSmall}{
-        (integer) nsmall, i.e. nubmer of decimal points, of a number (0 <= nsmall <= 20)
+        (integer) nsmall, i.e. number of decimal points, of a number (0 <= nsmall <= 20)
     }
 }
 \value{
