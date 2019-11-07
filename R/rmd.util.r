@@ -17,102 +17,114 @@ restoreWfrInfo=function(rdsFileName){
     assign('OUTPUTS',info1$outp,pEnv)
 }
 
-saveOutput=function(obj=NULL,oFileName=NA,saveWorkspace=F,oPath=getwd(),caption=NA,rmdInd=NA, eval=T,objID=NA,header=NA,
+saveOutput=function(obj=NULL,oFileName,saveWorkspace=FALSE,oPath=getwd(),caption=NA,rmdInd=NA, eval=TRUE,objID=NA,header=NA,
                     footer=NA,rowHeaderInd=NA,colWidths=NA,fontSize=11,nRowScroll = 20,
-                    nRowDisplay = 200, maxTableWidth = 7.2, theme = "zebra",...){
-    if(is.null(obj) && is.na(oFileName)){
-        stop("both obj and oFileName are empty!")
-    }
+                    nRowDisplay = 200, maxTableWidth = 7.2, theme = "zebra", numberOutputFiles=TRUE,...){
 
     pEnv <- parent.frame()
     #pEnv=globalenv()
-    counter2=get('OFCOUNTER',pEnv)
-    counterStr=NULL
-    if(!is.null(obj)){
-        counterStr=paste0(sprintf("%03d", counter2),'.')
+    counter2 = get('OFCOUNTER', pEnv)
+    counterStr = NULL
+    if (!is.null(obj) && numberOutputFiles) {
+        counterStr = paste0(sprintf("%03d", counter2), '.')
     }
 
-    if(is.na(rmdInd)){
-        rmdInd=counter2
+    if (is.na(rmdInd)) {
+        rmdInd = counter2
     }
 
-    if(!is.na(oFileName)){
-        dirName=dirname(oFileName)
-        oBaseName=paste0(counterStr,basename(oFileName))
+    dirName = dirname(oFileName)
+    oBaseName = paste0(counterStr, basename(oFileName))
 
-        if(dirName!='.'){ #contains path
-            if(substr(dirName,1,2)==paste0('.',.Platform$file.sep)){ # rative path ./pp/kk.txt
-                oPath=file.path(getwd(),substr(dirName,3,nchar(dirName)))
-            }else{ # absolute path
-                oPath=dirName
-            }
-        }
-    }
-
-    objPref=NULL
-    if(!is.na(oFileName)){
-        tokens1=unlist(strsplit(oFileName,'.',T))
-        objPref=tokens1[length(tokens1)]
-    }
-
-    if(is.data.frame(obj) || is.matrix(obj)){
-        if(!is.na(oFileName)){
-            write.csv(obj, file=file.path(oPath,oBaseName),...)
-        }
-
-        objPref='tab'
-    }else if(is.ggplot(obj)){
-        if(!is.na(oFileName)){
-            ggsave(file.path(oPath,oBaseName),obj,dpi=600)
-        }
-
-        objPref='fig'
-        nRowScroll=nRowDisplay=maxTableWidth=theme=NA
-    }else if(!is.null(obj)){
-        warning("the obj is not a table or ggplot!, saving r.image only")
-    }
-
-    if(!is.null(objPref)){
-        if(is.na(objID)){
-            objID=paste0(objPref,counter2)
-        }else{
-            objID=gsub("[^A-Za-z0-9]","",objID)
-            objID=paste0(objPref,objID)
-        }
-    }
-
-    if(saveWorkspace){
-        rImageFileName=paste0(counterStr,'r.image.rdata')
-        save.image(file.path(oPath,rImageFileName))
-    }
-
-    rdsFn=NA
-    if(!is.null(obj)){
-        if (!is.na(oFileName)) {
-            ofNameToken = unlist(strsplit(oBaseName, '.', T))
-            ofNamePrefix = paste(ofNameToken[-length(ofNameToken)], collapse = '.')
-            rdsFn = paste0(ofNamePrefix, '.rds')
+    if (dirName != '.') {
+        #contains path
+        if (substr(dirName, 1, 2) == paste0('.', .Platform$file.sep)) {
+            # rative path ./pp/kk.txt
+            oPath = file.path(getwd(), substr(dirName, 3, nchar(dirName)))
         } else{
-            rdsFn = paste0(counterStr, 'rds')
+            # absolute path
+            oPath = dirName
         }
+    }
+
+    rdsFn = NA
+    if (!is.null(obj)) {
+        ofNameToken = unlist(strsplit(oBaseName, '.', TRUE))
+        ofNamePrefix = paste(ofNameToken[-length(ofNameToken)], collapse = '.')
+        rdsFn = paste0(ofNamePrefix, '.rds')
         saveRDS(obj, file.path(oPath, rdsFn))
+
+        rdsOnly = endsWith(tolower(oFileName), 'rds')
+        objPref = 'unknown'
+        if (is.data.frame(obj) || is.matrix(obj)) {
+            if(!rdsOnly){
+                write.csv(obj, file = file.path(oPath, oBaseName), ...)
+            }
+            objPref = 'tab'
+        } else if (is.ggplot(obj)) {
+            if(!rdsOnly){
+                ggsave(file.path(oPath, oBaseName), obj, dpi = 600)
+            }
+            objPref = 'fig'
+            nRowScroll = nRowDisplay = maxTableWidth = theme = NA
+        } else {
+            warning("the obj is not a table or ggplot!, saving r.image only")
+            saveWorkspace = TRUE
+        }
     }
 
-    if(nrow(pEnv$OUTPUTS)>0 && objID %in% pEnv$OUTPUTS[1:(counter2-1),"objID"]){
+    if (saveWorkspace) {
+        rImageFileName = paste0(oBaseName, 'r.image.rdata')
+        save.image(file.path(oPath, rImageFileName))
+    }
+
+
+    if (is.na(objID)) {
+        objID = paste0(objPref, counter2)
+    } else{
+        objID = gsub("[^A-Za-z0-9]", "", objID)
+        objID = paste0(objPref, objID)
+    }
+
+
+    if (nrow(pEnv$OUTPUTS) > 0 &&
+        objID %in% pEnv$OUTPUTS[1:(counter2 - 1), "objID"]) {
         warning("duplicate objID, OFCOUNTER is appended.")
-        objID=paste0(objID,counter2)
+        objID = paste0(objID, counter2)
     }
 
-    row1=list(oPath=oPath, rdsFileName=rdsFn, oFileName=oBaseName, caption=caption,
-              rmdInd=rmdInd, eval=eval, objID=objID, header=header, footer=footer,
-              rowHeaderInd=rowHeaderInd, colWidths=colWidths, fontSize=fontSize, nRowScroll = nRowScroll,
-              nRowDisplay = nRowDisplay, maxTableWidth = maxTableWidth, theme = theme)
-    pEnv$OUTPUTS=rbind.data.frame(pEnv$OUTPUTS[1:(counter2-1),],row1,stringsAsFactors = F)
+    row1 = list(
+        oPath = oPath,
+        rdsFileName = rdsFn,
+        oFileName = oBaseName,
+        caption = caption,
+        rmdInd = rmdInd,
+        eval = eval,
+        objID = objID,
+        header = header,
+        footer = footer,
+        rowHeaderInd = rowHeaderInd,
+        colWidths = colWidths,
+        fontSize = fontSize,
+        nRowScroll = nRowScroll,
+        nRowDisplay = nRowDisplay,
+        maxTableWidth = maxTableWidth,
+        theme = theme
+    )
+
+    if(counter2>1){
+        pEnv$OUTPUTS = rbind.data.frame(pEnv$OUTPUTS[1:(counter2 - 1), ], row1, stringsAsFactors = FALSE)
+    }else{
+        pEnv$OUTPUTS = rbind.data.frame(pEnv$OUTPUTS, row1, stringsAsFactors = FALSE)
+    }
+
 
     #OFCOUNTER <- OFCOUNTER + 1
-    assign('OFCOUNTER',counter2 + 1,pEnv)
+    assign('OFCOUNTER', counter2 + 1, pEnv)
 
-    cat('------------------------------finish', ifelse(is.na(rdsFn),oFileName,rdsFn),"\n")
+    cat('------------------------------finish',
+        ifelse(is.na(rdsFn), oFileName, rdsFn),
+        "\n")
 }
 
 
@@ -138,9 +150,9 @@ createRmd=function(outputRmdFn,outputListFn,
     figCap=', fig.cap=opts_current$get("fig.cap")'
 
     #library(openxlsx)
-    file.copy(rmdTemplateFn,outputRmdFn,overwrite = T)
+    file.copy(rmdTemplateFn,outputRmdFn,overwrite = TRUE)
     oFile=file(outputRmdFn,'at')
-    oLine=paste0('\n\n```{r include=F}
+    oLine=paste0('\n\n```{r include=FALSE}
     loadLibs(c("',paste0(libs,collapse='","'),'"))
     df1=read.xlsx("',outputListFn,'")\n```')
     writeLines(oLine,oFile)
@@ -166,7 +178,7 @@ createRmd=function(outputRmdFn,outputListFn,
 
 # utility function used in Rmd file -------------------
 nDecimal=function(x){
-    h=strsplit(as.character(x), ".",fixed = T)
+    h=strsplit(as.character(x), ".",fixed = TRUE)
     sapply(h, function(x){
         if(is.na(x[1])){
             NA
@@ -178,7 +190,7 @@ nDecimal=function(x){
 
 # digits only goes with scientific notation
 setNsmall=function(v,nSmall){
-    if(max(abs(v),na.rm = T)>999){
+    if(max(abs(v),na.rm = TRUE)>999){
         format(round(v,digits = nSmall),big.mark = ',',nsmall = nSmall)
     }else{
         format(round(v,digits = nSmall),nsmall = nSmall)
@@ -194,7 +206,7 @@ isVecNumeric=function(v){
             v2=v2[!sapply(v2,is.empty)]
             isNum=all(!is.na(suppressWarnings(as.numeric(v2))))
         }else{
-            isNum=F
+            isNum=FALSE
         }
     }
     isNum
@@ -211,14 +223,14 @@ num2formattedStr=function(v){
 
     if(is.numeric(v)){
         v2=abs(v)
-        vMin = min(v2,na.rm = T)
-        vMed = median(v2,na.rm = T)
-        vMax = max(v2,na.rm = T)
+        vMin = min(v2,na.rm = TRUE)
+        vMed = median(v2,na.rm = TRUE)
+        vMax = max(v2,na.rm = TRUE)
 
         if(all(is.na(v))){
             v
         }else if(vMed>=1000000 || vMed < 0.01){
-            format(v,scientific = T,digits = 3)
+            format(v,scientific = TRUE,digits = 3)
         }else if(vMed>=100 || all(nDecimal(v) %in% c(0,NA))){
             # 2nd case is integers in (-999,999) but has decimal
             #   points in representation, i.e. 30.00
@@ -228,11 +240,11 @@ num2formattedStr=function(v){
         }else if(vMed>=1){
             setNsmall(v,2)
         }else if(vMin>=0.1){
-            setNsmall(v,2+(max(v,na.rm = T)<=1))
+            setNsmall(v,2+(max(v,na.rm = TRUE)<=1))
         }else if(vMin>=0.01){
             setNsmall(v,3)
         }else{
-            format(v,scientific = T,digits = 3)
+            format(v,scientific = TRUE,digits = 3)
         }
     }else{ v }
 }
@@ -240,14 +252,14 @@ num2formattedStr=function(v){
 
 
 str2list=function(x){
-    kk=unlist(strsplit(x,'||',fixed = T))
-    h=sapply(kk, function(x){strsplit(x,'|',fixed = T)})
+    kk=unlist(strsplit(x,'||',fixed = TRUE))
+    h=sapply(kk, function(x){strsplit(x,'|',fixed = TRUE)})
     lapply(h,sapply,trimws)
 }
 
 
 is.empty=function(x){
-    #is.na(matrix()) is T
+    #is.na(matrix()) is TRUE
     if(any(is.list(x),is.factor(x))) return(all(length(x)==0))
     if(is.character(x)) return(all(trimws(x) %in% c("","NaN","Inf","-Inf","NA",".")))
 
@@ -260,7 +272,7 @@ loadLibs=function(failedPackages){
     #It tries different paths only if the package is absent from the current path.
     for(i in .libPaths()){
         if(length(failedPackages)>0){
-            loadDone=sapply(failedPackages, require, character.only=T, quietly=T, lib.loc=i)
+            loadDone=sapply(failedPackages, require, character.only=TRUE, quietly=TRUE, lib.loc=i)
             failedPackages=names(loadDone)[!loadDone]
         }
     }
@@ -292,9 +304,9 @@ tRef <- function(label,isDocx) {
 }
 
 rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NULL,fontSize=11,
-                  caption=NULL,rowHeaderInd=NULL,isDocx=T,nRowScroll=20, nRowDisplay=200,
+                  caption=NULL,rowHeaderInd=NULL,isDocx=TRUE,nRowScroll=20, nRowDisplay=200,
                   maxTableWidth=7,theme=c("zebra","box","booktabs","vanilla","tron","vader"),
-                  underLine2Space=T, splitCamelCase=F, footerFontSize=9,minFontSize=9){
+                  underLine2Space=TRUE, splitCamelCase=FALSE, footerFontSize=9,minFontSize=9){
     # dataDf: the data frame
     # header: can be a string or a list of one or more character vectors
     #   string: use '|' to separate cell, and '||' to separate rows.
@@ -315,7 +327,7 @@ rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NU
     #   to the begining of caption. For docx output: there is no cross-reference URL.
     # rowHeaderInd: for the table body, the indices of columns where neighboring cells of identical content in each
     #   column may be collapsed.
-    # isDocx: is the output format docx; if F, html.
+    # isDocx: is the output format docx; if FALSE, html.
     # nRowScroll: for html output only, the cutoff on nuber of rows to apply a scroll window.
     # nRowDisplay: the max number of rows to print.
 
@@ -333,7 +345,7 @@ rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NU
     ## footer=c("$^a$VID: vechile ID || $^b$color code: vechile color code$~ref$")
     ## footer=c("VID: vechile ID || color code|vechile color code$^ref$|b|header || top2|color code 2$~ref$|e|body")
     # colWidths=c(1,2,1,1)
-    # rmdTable(df1,header,footer,colWidths,caption = "my cap",isDocx = F)
+    # rmdTable(df1,header,footer,colWidths,caption = "my cap",isDocx = FALSE)
     if(isDocx && nrow(dataDf)>nRowDisplay){
         dataDf=dataDf[1:nRowDisplay,]
         caption=paste0(caption," (top ", nRowDisplay, " rows only)")
@@ -343,7 +355,7 @@ rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NU
         header1=header[[length(header)]]
 
         if(underLine2Space){
-            header1=gsub('_',' ',header1,fixed = T)
+            header1=gsub('_',' ',header1,fixed = TRUE)
         }
 
         if(splitCamelCase){
@@ -367,7 +379,7 @@ rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NU
     }
 
     if(is.character(colWidths)){
-        colWidths=as.numeric(unlist(strsplit(colWidths,',',fixed = T)))
+        colWidths=as.numeric(unlist(strsplit(colWidths,',',fixed = TRUE)))
     }
 
     # if(is.null(header)){
@@ -456,7 +468,7 @@ setWidths=function(x, header1, maxTableWidth=7,rowHeaderInd=NULL,minFontSize=9,
         wBody[1:rowHeaderInd]=wBody[1:rowHeaderInd]*1.1
     }
 
-    letterOnlyInds=grep("^[a-z]*$",header1,ignore.case = T)
+    letterOnlyInds=grep("^[a-z]*$",header1,ignore.case = TRUE)
 
     wRatios=(wHeader-wBody)/wBody
     indsH=which(wRatios>0)
@@ -512,7 +524,7 @@ setWidths=function(x, header1, maxTableWidth=7,rowHeaderInd=NULL,minFontSize=9,
 
             # still does not fit at minFontSize, wrap the table body, staring from
             #   the longest table columns.
-            bLenInds=order(wBody2,decreasing = T)
+            bLenInds=order(wBody2,decreasing = TRUE)
             i=1
             while(sum(wBody2)>maxTableWidth && i<=length(bLenInds)){
                 j=bLenInds[i]
@@ -543,163 +555,6 @@ setWidths=function(x, header1, maxTableWidth=7,rowHeaderInd=NULL,minFontSize=9,
 }
 
 
-# break a string at a non-letter position into k substrings, so that the longest substring
-#  after breaking is the shortest among all possible breaking points.
-# not done yet
-# .breakRatio1=function(aStr, k=2){
-#     inds=gregexpr("[^a-zA-Z]",aStr)[[1]]
-#     k=min(k,length(inds)+1)
-#     if(k==1){
-#         return(1)
-#     }
-#
-#     nc1=nchar(aStr)
-#     minInd=ifelse(k>2,nc1/k,1)
-#     maxInd=ifelse(k>2,nc1*(k-1)/k,nc1)
-#     inds=inds[which(inds>=minInd && inds<=maxInd)]
-#
-#     d1=abs(inds-nc1/k)
-#     if(k>2){
-#         d1=c(d1,abs(inds-nc1*(k-1)/k))
-#     }
-#
-#     i=(which(d1==min(d1)))[1]
-#     maxSubLen=ifelse(k>2, min(inds[i],nc1-inds[i]),max(inds[i],nc1-inds[i]))
-#     maxSubLen/nc1
-# }
-
-
-# this wraps the header into three lines
-# .setWidths1=function(x, header1, maxTableWidth=7,rowHeaderInd=NULL,minFontSize=9,
-#                      nRowPerRowHeader=NULL){
-#     stopifnot(inherits(x, "flextable"))
-#     newFontSize=x$body$styles$text$font.size$data[1,1]
-#     #cell padding in inch
-#     CP=0.15
-#
-#     # the widths here isn't for the header1 only, but for all rows in the header.
-#     #   However, only widths of header1 is needed here since usually other rows are
-#     #   of multicell-rows.
-#     # wHeader=dim_pretty(x,"header")$widths
-#     #   this is the widths of header1 only, but not accounting for theme, which differ from
-#     #   hw0, i.e. those of accounting for theme, by ~1.3 times. Therefore, wHeader need
-#     #   to use hw0 except those cells where the cells on top are multicells.
-#     wHeader=(delete_part(x) %>% add_header_row(values = header1) %>% dim_pretty(part="header"))$widths*1.3
-#     hw0=dim_pretty(x,"header")$widths
-#     sInds=which(hw0/wHeader<1.2)
-#     wHeader[sInds]=hw0[sInds]
-#     #add 0.05 inch so columns won't be too tight
-#     wBody=dim_pretty(x,"body")$widths + CP
-#     if(!is.null(rowHeaderInd)){
-#         #increase 10% for being bold font
-#         wBody[1:rowHeaderInd]=wBody[1:rowHeaderInd]*1.1
-#     }
-#
-#     letterOnlyInds=grep("^[a-z]*$",header1,ignore.case = T)
-#
-#     wRatios=(wHeader-wBody)/wBody
-#     indsH=which(wRatios>0)
-#
-#     HBWidths=mapply(max, wHeader,wBody)
-#     if(sum(HBWidths)<=maxTableWidth){
-#         wBody2=HBWidths
-#     }else if(sum(HBWidths)/maxTableWidth < 1.08){
-#         # if table can fit by reducing font size by 1, do that instead of
-#         #   wrapping headers.
-#         wBody2=HBWidths*0.92
-#         newFontSize=newFontSize-1
-#     }else{
-#         wBody2=wBody
-#         wHeader2=wHeader
-#         indsH2=intersect(indsH,letterOnlyInds)
-#         for(i in indsH2){
-#             wBody2[i]=max(wBody[i],wHeader[i]+CP)
-#         }
-#
-#         indsH2=setdiff(indsH,letterOnlyInds)
-#         for(i in indsH2){
-#             #wrap headers
-#             ratio1=breakRatio(header1[i])
-#             # the closer ratio1 is to 1, the more likely ratio1*1.3 > 1
-#             #wHeader2[i]=wHeader[i]*ratio1*1.3
-#             wHeader2[i]=min(wHeader[i]*ratio1 + CP, wHeader[i]*0.9)
-#             # 1.3 is to give more room
-#             wBody2[i]=max(wBody[i],wHeader2[i])
-#         }
-#
-#         #wrap rowHeader if they are multi-cells
-#         if(sum(wBody2)>maxTableWidth){
-#             for(i in rowHeaderInd){
-#                 d1=sum(wBody2)-maxTableWidth
-#                 c1=nRowPerRowHeader[i]
-#                 if(c1>1){
-#                     wBody2[i]=wBody2[i]/c1 + max(wBody2[i]/c1-d1,0)
-#                     wBody2[i]=max(wBody2[i],wHeader2[i])
-#                 }
-#             }
-#         }
-#
-#         # reduce font size to minFontSize
-#         if(sum(wBody2)>maxTableWidth){
-#             fsr=sum(wBody2)/maxTableWidth - 1
-#             # character length reduces by 8% per font size
-#             fsr=min(ceiling(fsr/0.08), newFontSize-minFontSize)
-#             wBody2=wBody2*(1-fsr*0.08)
-#             wHeader2=wHeader2*(1-fsr*0.08)
-#             newFontSize=newFontSize-fsr
-#         }
-#
-#         # further wrap the header
-#         if(sum(wBody2)>maxTableWidth){
-#             wBody=wBody*(1-fsr*0.08)
-#
-#             wRatios3=(wHeader2-wBody2)/wBody2
-#             indsH3=which(wRatios3>0)
-#             indsH3=setdiff(indsH3,letterOnlyInds)
-#             for(i in indsH3){
-#                 #wrap headers
-#                 ratio1=breakRatio(header1[i],3)
-#                 # the closer ratio1 is to 1, the more likely ratio1*1.3 > 1
-#                 #wHeader2[i]=wHeader[i]*ratio1*1.3
-#                 wHeader2[i]=min(wHeader[i]*ratio1 + CP, wHeader[i]*0.9)
-#                 # 1.3 is to give more room
-#                 wBody2[i]=max(wBody[i],wHeader2[i])
-#             }
-#
-#         }
-#
-#         # wrap the table body, staring from
-#         #   the longest table columns.
-#         bLenInds=order(wBody2,decreasing = T)
-#         i=1
-#         while(sum(wBody2)>maxTableWidth && i<=length(bLenInds)){
-#             j=bLenInds[i]
-#             if(!(j %in% rowHeaderInd)){
-#                 d1=sum(wBody2)-maxTableWidth
-#                 # set wBody2[j] exactly by half may cause wrapping into three lines
-#                 #   therefore setting a value slightly smaller than 2
-#                 c1=ifelse(wBody2[j]/2<d1,1.95,2)
-#                 wBody2[j]=wBody2[j]/c1 + max(wBody2[j]/c1-d1,0)
-#                 wBody2[j]=max(wBody2[j],wHeader2[j])
-#             }
-#
-#             i=i+1
-#         }
-#
-#         # while(sum(wBody2)>maxTableWidth && i<=length(bLenInds)){
-#         #     j=bLenInds[i]
-#         #     d1=sum(wBody2)-maxTableWidth
-#         #     #c1=ifelse(d1/wBody2[i]>0.5 && i <= rowHeaderInd,2.95,1.95)
-#         #     wBody2[j]=wBody2[j]/c1 + max(wBody2[j]/c1-d1,0)
-#         #     wBody2[j]=max(wBody2[j],wHeader[j])
-#         #     i=i+1
-#         # }
-#
-#     }
-#
-#     list(widths=wBody2,fs=newFontSize)
-# }
-
 
 
 setFlexTableFontSize=function(ft,fontSize,footerFontSize=9){
@@ -709,9 +564,9 @@ setFlexTableFontSize=function(ft,fontSize,footerFontSize=9){
 
 
 myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NULL,
-                     fontSize=11,caption=NULL,rowHeaderInd=NULL,mergeBodyColumn=T,
+                     fontSize=11,caption=NULL,rowHeaderInd=NULL,mergeBodyColumn=TRUE,
                      maxTableWidth=7,theme=c("zebra","box","booktabs","vanilla","tron","vader"),
-                     underLine2Space=T, splitCamelCase=F,footerFontSize=9,minFontSize=9){
+                     underLine2Space=TRUE, splitCamelCase=FALSE,footerFontSize=9,minFontSize=9){
     # create a table used in Rmd file that can output correctly to common format, esp. docx, whereas kable() cannot.
     #   uses flextable package: https://davidgohel.github.io/flextable/articles/overview.html
     #   similar packages: https://hughjonesd.github.io/huxtable/huxtable.html
@@ -732,7 +587,7 @@ myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths
         }
         ft=delete_part(ft)
         for (i in header) {
-            ft=add_header_row(ft,top=F,values = i)
+            ft=add_header_row(ft,top=FALSE,values = i)
         }
         ft = merge_v(ft, part = "header")
     }
@@ -787,7 +642,7 @@ myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths
         }
 
         convertOneFooterStr=function(ftStr){
-            ftVec=unlist(strsplit(ftStr,split = "$",fixed = T))
+            ftVec=unlist(strsplit(ftStr,split = "$",fixed = TRUE))
             lapply(ftVec,makeFooterChunk )
         }
 
@@ -840,7 +695,7 @@ myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths
     }
 
     if(!is.empty(caption)){
-        if(grepl("Table",caption,ignore.case = T)){
+        if(grepl("Table",caption,ignore.case = TRUE)){
             # increases dim_pretty(ft,"header")$widths[1]. So it MUST be placed after setWidths()
             # seems add_header_lines use default font size 10, regardless of the actual font size
             # of the table.
@@ -857,8 +712,8 @@ myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths
         ft=fontsize(ft,size=newFontSize,part = "header")
     }
 
-    ft= align_nottext_col(ft,align = "center",footer = F) %>%
-        align_text_col(align = "center",footer = F) %>% width(width=colWidths)
+    ft= align_nottext_col(ft,align = "center",footer = FALSE) %>%
+        align_text_col(align = "center",footer = FALSE) %>% width(width=colWidths)
 
     ft
 }
@@ -943,7 +798,7 @@ myKable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,caption=NULL,
                 if(i[4]=="header"){
                     header=aList
                 }else{
-                    dataDf[,1:2]=do.call(cbind.data.frame, list(aList,stringsAsFactors=F))
+                    dataDf[,1:2]=do.call(cbind.data.frame, list(aList,stringsAsFactors=FALSE))
                 }
             }
         }
@@ -956,7 +811,7 @@ myKable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,caption=NULL,
     }
 
     kTheme=switch (theme[1],box="bordered",zebra="striped","basic")
-    ft <- kable(dataDf,caption = caption, escape = T,align = "c") %>% kable_styling(kTheme)
+    ft <- kable(dataDf,caption = caption, escape = TRUE,align = "c") %>% kable_styling(kTheme)
 
     if(length(header)>0){
         for (h1 in header) {
@@ -966,7 +821,7 @@ myKable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,caption=NULL,
     }
 
     if(!is.empty(rowHeaderInd)){
-        ft=column_spec(ft,rowHeaderInd, bold = T) %>% collapse_rows(ft,columns = rowHeaderInd, valign = "middle")
+        ft=column_spec(ft,rowHeaderInd, bold = TRUE) %>% collapse_rows(ft,columns = rowHeaderInd, valign = "middle")
     }
 
     if(!is.empty(footer)){
@@ -978,7 +833,7 @@ myKable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,caption=NULL,
 
         #a footerStr is i[2] of a footer, a footer is a char vec of length 4
         convertOneFooterStr=function(ftStr){
-            ftVec=unlist(strsplit(ftStr,split = "$",fixed = T))
+            ftVec=unlist(strsplit(ftStr,split = "$",fixed = TRUE))
             ftVec=sapply(ftVec,makeFooterChunk )
             paste(ftVec,collapse = "")
         }
@@ -1002,7 +857,7 @@ myKable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,caption=NULL,
 
 
 
-showObj=function(oDf,objID=NULL,isDocx=F,...){
+showObj=function(oDf,objID=NULL,isDocx=FALSE,...){
     if(is.null(objID)){
         objID=opts_current$get("label")
     }

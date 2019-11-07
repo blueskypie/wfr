@@ -10,17 +10,17 @@ Construct a table
 \usage{
 rmdTable(dataDf, header = list(colnames(dataDf)), footer = NULL,
          colWidths = NULL, fontSize = 11, caption = NULL,
-         rowHeaderInd = NULL, isDocx = T, nRowScroll = 20,
+         rowHeaderInd = NULL, isDocx = TRUE, nRowScroll = 20,
          nRowDisplay = 200, maxTableWidth = 7,
          theme = c("zebra","box","booktabs","vanilla","tron","vader"),
-         underLine2Space=T, splitCamelCase=F,
+         underLine2Space=TRUE, splitCamelCase=FALSE,
          footerFontSize=9, minFontSize=9)
 
 myFlexTable(dataDf,header=list(colnames(dataDf)), footer = NULL,
             colWidths = NULL, fontSize = 11, caption = NULL,
-            rowHeaderInd = NULL, mergeBodyColumn = T, maxTableWidth = 7,
+            rowHeaderInd = NULL, mergeBodyColumn = TRUE, maxTableWidth = 7,
             theme = c("zebra","box","booktabs","vanilla","tron","vader"),
-            underLine2Space=T, splitCamelCase=F,
+            underLine2Space=TRUE, splitCamelCase=FALSE,
             footerFontSize=9, minFontSize=9)
 
 myKable(dataDf,header = list(colnames(dataDf)), footer = NULL,
@@ -74,11 +74,11 @@ setFlexTableFontSize(ft,fontSize,footerFontSize=9)
     }
 
     \item{mergeBodyColumn}{
-        (boolean, T) \code{if(mergeBodyColumn && rowHeaderInd > 1)}, neighboring horizontal cells in table body are merged if they are in rows where exists identical neighboring horizontal cells in row header. This flag is to prevent, if set to \code{F}, the merging of identical neighboring horizontal cells in table body, when the intention is to limit such merging to row header only.
+        (boolean, TRUE) \code{if(mergeBodyColumn && rowHeaderInd > 1)}, neighboring horizontal cells in table body are merged if they are in rows where exists identical neighboring horizontal cells in row header. This flag is to prevent, if set to \code{FALSE}, the merging of identical neighboring horizontal cells in table body, when the intention is to limit such merging to row header only.
     }
 
     \item{isDocx}{
-        (boolean, T) if \code{T}, use \code{myFlexTable}; otherwise, \code{myKable}
+        (boolean, TRUE) if \code{TRUE}, use \code{myFlexTable}; otherwise, \code{myKable}
     }
 
     \item{nRowScroll}{
@@ -98,11 +98,11 @@ setFlexTableFontSize(ft,fontSize,footerFontSize=9)
     }
 
     \item{underLine2Space}{
-    (boolean, T) Should the underlines '_' in the 1st row of column header be changed to space? If so, when a column header containing '_' is wrapped, the wrapping happens at a space in stead of the middle of a word.
+    (boolean, TRUE) Should the underlines '_' in the 1st row of column header be changed to space? If so, when a column header containing '_' is wrapped, the wrapping happens at a space in stead of the middle of a word.
   }
 
   \item{splitCamelCase}{
-    (boolean, F) Should the camel cases in the 1st row of column header be split into separated words? for example, change "youMadeItLOL" into "you Made It LOL". If so, when a column header in camel case is wrapped, the wrapping happens at a space in stead of the middle of a word.
+    (boolean, FALSE) Should the camel cases in the 1st row of column header be split into separated words? for example, change "youMadeItLOL" into "you Made It LOL". If so, when a column header in camel case is wrapped, the wrapping happens at a space in stead of the middle of a word.
   }
 
     \item{footerFontSize}{
@@ -115,7 +115,7 @@ setFlexTableFontSize(ft,fontSize,footerFontSize=9)
 }
 
 \details{
-\code{myFlexTable} and \code{myKable} are wrapper functions of \code{\link[flextable]{flextable}} and \code{\link[knitr]{kable}}, and \code{rmdTable} is a wrapper of the two wrappers with \code{isDocx T} referring to \code{myFlexTable} and \code{F} to \code{myKable}
+\code{myFlexTable} and \code{myKable} are wrapper functions of \code{\link[flextable]{flextable}} and \code{\link[knitr]{kable}}, and \code{rmdTable} is a wrapper of the two wrappers with \code{isDocx TRUE} referring to \code{myFlexTable} and \code{FALSE} to \code{myKable}
 }
 \value{
 (flextable or kable object)

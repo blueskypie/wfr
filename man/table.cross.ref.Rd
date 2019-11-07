@@ -27,7 +27,7 @@ tCap(cap, label, isDocx)
 Because the current version of \code{\link[flextable]{flextable}v0.5.5} does not work with \href{https://bookdown.org/yihui/bookdown}{bookdown}v0.12 in automatically producing table cross-reference, these functions are a workaround.
 }
 \value{
-(character) If \code{isDocx} is \code{F}, \code{tRef} returns \code{Table \\@ref(tab:label)} and \code{tCap} simply returns \code{cap}; otherwise, \code{tRef} returns \code{Table. x} and \code{tCap} returns \code{Table. x cap}, where \code{x} is the ordered index of the table.
+(character) If \code{isDocx} is \code{FALSE}, \code{tRef} returns \code{Table \\@ref(tab:label)} and \code{tCap} simply returns \code{cap}; otherwise, \code{tRef} returns \code{Table. x} and \code{tCap} returns \code{Table. x cap}, where \code{x} is the ordered index of the table.
 }
 \examples{
 library(wfr)

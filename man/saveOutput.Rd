@@ -8,10 +8,11 @@ Save the current R image or the object rds file and add its information to the m
 Save the current R image or the object rds file and optionally other formats of the object (e.g. csv for tables and png for figures), its caption, and other information related to its appearance in the R markdown file, to the matrix OUTPUTS
 }
 \usage{
-saveOutput(obj=NULL,oFileName=NA, saveWorkspace=F, oPath=getwd(), caption=NA ,
-           rmdInd=NA, eval=T,objID=NA, header=NA, footer=NA,
+saveOutput(obj=NULL,oFileName, saveWorkspace=FALSE, oPath=getwd(), caption=NA ,
+           rmdInd=NA, eval=TRUE,objID=NA, header=NA, footer=NA,
            rowHeaderInd=NA, colWidths=NA, fontSize=11, nRowScroll = 20,
-           nRowDisplay = 200, maxTableWidth = 7.2, theme = "zebra",...)
+           nRowDisplay = 200, maxTableWidth = 7.2, theme = "zebra",
+           numberOutputFiles=TRUE,...)
 }
 
 
@@ -21,16 +22,16 @@ saveOutput(obj=NULL,oFileName=NA, saveWorkspace=F, oPath=getwd(), caption=NA ,
   }
 
   \item{oFileName}{
-    (character, NA). The file name of the text (e.g. csv) or image (e.g. png) file of the \code{obj} to save. Use, e.g. \code{./path1/my.csv}, instead of \code{path1/my.csv} to include a relative path into the file name. If \code{oFileName} contains either a relative or absolute path, the \code{oPath} will be replaced by the whole path.
+    (character). The file name of the text (e.g. csv) or image (e.g. png) file of the \code{obj} to save. Use, e.g. \code{./path1/my.csv}, instead of \code{path1/my.csv} to include a relative path into the file name. If \code{oFileName} contains either a relative or absolute path, the \code{oPath} will be replaced by the whole path.
   }
 
   \item{saveWorkspace}{
-    (boolean, F)
+    (boolean, FALSE)
     \itemize{
-        \item F: Save the rds file of the \code{obj} only. If \code{oFileName} is provided, the rds file name is \code{paste0(ofNamePrefix,'.rds')}; otherwise,
+        \item FALSE: Save the rds file of the \code{obj} only. If \code{oFileName} is provided, the rds file name is \code{paste0(ofNamePrefix,'.rds')}; otherwise,
 
         \code{paste0(sprintf} \code{("\%03d", OFCOUNTER),'.rds')}.
-        \item T: In addition to the rds file, save the R image of the workspace where \code{obj} is generated as \code{paste0(sprintf} \code{("\%03d", OFCOUNTER),'.r.image.rdata')}
+        \item TRUE: In addition to the rds file, save the R image of the workspace where \code{obj} is generated as \code{paste0(sprintf} \code{("\%03d", OFCOUNTER),'.r.image.rdata')}
     }
   }
 
@@ -48,7 +49,7 @@ saveOutput(obj=NULL,oFileName=NA, saveWorkspace=F, oPath=getwd(), caption=NA ,
   }
 
   \item{eval}{
-    (boolean, T). Should the \code{obj} be included/evaluated in the Rmd file?
+    (boolean, TRUE). Should the \code{obj} be included/evaluated in the Rmd file?
   }
 
   \item{objID}{
@@ -69,6 +70,10 @@ saveOutput(obj=NULL,oFileName=NA, saveWorkspace=F, oPath=getwd(), caption=NA ,
 
   \item{rowHeaderInd, fontSize, nRowScroll, nRowDisplay, maxTableWidth, theme}{
     Parameters for \code{obj}, if it is displayed as a table in the Rmd file. See same parameters in \code{\link{rmdTable}} for more details.
+  }
+
+  \item{numberOutputFiles}{
+    (boolean, TRUE). Should the output files be numbered?
   }
 
   \item{...}{
@@ -125,15 +130,18 @@ print(OUTPUTS)
 df1=data.frame(A=c("a","a","b3"),
                B=c("b1","b2","b3"),
                C1=1:3,C2=2:4)
-\dontrun{
-  saveOutput(df1, oFileName="tab.1.csv", caption="this is a testing table")
+\donttest{
+  tmpDir = tempdir()
+  ofn = file.path(tmpDir, "tab.1.csv")
+  saveOutput(df1, oFileName=ofn, caption="this is a testing table")
 }
 
 print(OFCOUNTER)
 print(OUTPUTS)
 
-\dontrun{
-  saveOutput(qplot(1:10,1:10), oFileName="fig.1.png", caption="this is a testing plot")
+\donttest{
+  ofn = file.path(tmpDir, "fig.1.png")
+  saveOutput(qplot(1:10,1:10), oFileName=ofn, caption="this is a testing plot")
 }
 
 print(OFCOUNTER)

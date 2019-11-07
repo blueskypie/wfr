@@ -12,13 +12,14 @@ vignette: >
 ---
 
 
-```{r echo=F, message = F, include= F, warning = T, dpi = 300}
+```{r echo=FALSE, message = FALSE, include= FALSE, warning = TRUE, dpi = 300}
 oFormat="html"
-knitr::opts_chunk$set(echo = F,message = F,warning = F,error=T,include = T,cache=F,fig.align="center",
+knitr::opts_chunk$set(echo = FALSE,message = FALSE,warning = FALSE,error=TRUE,include = TRUE,cache=FALSE,fig.align="center",
                       fig.width = 10, fig.height=8, dpi = 300, 
-                      out.width = ifelse(oFormat=="pdf","480pt","800px"))
-#isDocx = (oFormat!="html")
-isDocx=T
+                      out.width = ifelse(oFormat=="pdf","480pt","800px"),tidy = TRUE)
+
+
+isDocx=TRUE
 library(wfr)
 sharedLibs <-c("knitr","pander","xtable","magrittr","flextable","officer","openxlsx")
 extraLibs = `if`(isDocx,c("captioner","stringr"),c("kableExtra"))
@@ -26,6 +27,10 @@ loadLibs(c(sharedLibs,extraLibs))
 ```  
 
 `r if(oFormat=="html") setHtmlHeaderProperty()`
+
+# Note
+If you are reading this document in HTML format, please read the [PDF document](https://github.com/blueskypie/wfr/blob/master/wfr.vignette.pdf) because some of the demonstrated formatting features are not displayed correctly in HTML format.
+
 
 # Acknowledgment
 The development of this workflow is inspired by Dr. Wenfei Zhang's previous work in separating data analysis from document creation - saving analysis results in R script and including those results in a R markdown file for document generation.
@@ -51,7 +56,7 @@ A large data analysis project can produce many outputs, e.g. tables and figures,
 
 More importantly, in compiling reports for such projects, many of those output tables and figures are included. `r tRef("tab1",isDocx)` is one such example. If a report contains two dozen such tables, compiling, formatting, and cross-referencing those tables take lots of time.
 
-```{r tab1,message=T}
+```{r tab1,message=TRUE}
 fileName=system.file("extdata", "example.table.1.csv", package = "wfr")
 df1 = read.csv(fileName)
 header = list(c('variable','stats','subject','subject','subject'),colnames(df1))
@@ -163,7 +168,7 @@ knitr::include_graphics(system.file("extdata", "table.themes.png", package = "wf
 #knitr::include_graphics("../inst/extdata/table.themes.png")
 ```  
 
-For html output, function `kable` is used, and only zebra, box, and vanilla are available. In addition, I have not found a way, using `kable`, to merge horizontal neighboring cells in the *first* row of header (the two `A`) and in the table *body* (the two `b3`), as figure \@ref(fig:figTableKable) shows. Although such needs for more table themes and merging those cells are rare, if really needed, `flextable` can be used for html output by just setting `isDocx = T` instead of the `isDocx = (oFormat != "html")` in the Rmd file produced by `createRmd`. The only drawback is that the cross-reference of flextable-produced tables is not URL-linked, i.e. not clickable.
+For html output, function `kable` is used, and only zebra, box, and vanilla are available. In addition, I have not found a way, using `kable`, to merge horizontal neighboring cells in the *first* row of header (the two `A`) and in the table *body* (the two `b3`), as figure \@ref(fig:figTableKable) shows. Although such needs for more table themes and merging those cells are rare, if really needed, `flextable` can be used for html output by just setting `isDocx = TRUE` instead of the `isDocx = (oFormat != "html")` in the Rmd file produced by `createRmd`. The only drawback is that the cross-reference of flextable-produced tables is not URL-linked, i.e. not clickable.
 
 ```{r figTableKable, fig.cap="`kable` cannot merge horizontal cells in the 1st row of header and table body"}
 knitr::include_graphics(system.file("extdata", "table.kable.PNG", package = "wfr"))
@@ -185,15 +190,15 @@ Each numerical column of the `dataDf` in `rmdTable` is formatted automatically b
 * whether to apply scientific notation
 
 To illustrate, `r tRef("tabNoF",isDocx)` is before formatting, and `r tRef("tabF",isDocx)` is after formatting.
-```{r tabNoF, echo=T}
+```{r tabNoF, echo=TRUE}
 fileName=system.file("extdata", "example.format.csv", package = "wfr")
-df1 = read.csv(fileName,check.names = F)
+df1 = read.csv(fileName,check.names = FALSE)
 
 flextable(df1) %>% set_caption(caption=tCap("Auto-formatting on numbers using flextable","tabNoF",isDocx)) %>% autofit()
 ```
 <br>
 
-```{r tabF, echo=T}
+```{r tabF, echo=TRUE}
 rmdTable(df1, caption = tCap("Auto-formatting on numbers using num2formattedStr","tabF",isDocx), isDocx = isDocx)
 ```
 
@@ -217,10 +222,10 @@ In majority cases, the column widths set by `setWidths` does not need any manual
 * headers of single word are not wrapped, even if they are much longer than its table body; 
 * other headers whose lengths are greater than those of table body are all wrapped once, instead of some not being wrapped and some being wrapped twice. Such behavior is achieved by finding the non-letter character closest to the center of a header and using that as wrapping point. The length of the header is updated to be the length after wrapping after addition of a proper cell padding.
 
-```{r tabSW1, echo=T}
+```{r tabSW1, echo=TRUE}
 fileName=system.file("extdata", "example.table.2.csv", package = "wfr")
-df1 = read.csv(fileName,check.names = F)
-colnames(df1)=gsub('?','Δ',colnames(df1),fixed = T)
+df1 = read.csv(fileName,check.names = FALSE)
+colnames(df1)=gsub('?','Δ',colnames(df1),fixed = TRUE)
 header=list(c("pathway","gene",rep("batch A",3),rep("batch B",3),rep("A vs B",3)),colnames(df1))
 footer=list(c("ΔCt Mean","ΔCt is calulated using median value as reference gene for each visit and patient,i.e., ΔCt = Ct - Ct$~median$","a","header"),
             c("Gene 1", "Our target gene$^ref$","b","body"))
@@ -231,7 +236,7 @@ rmdTable(df1, caption = tCap("maxTableWidth is set as 7.0 inches (default)","tab
 
  `r tRef("tabSW2",isDocx)` sets `maxTableWith = 6.5`. The algorithm reduces font size by 1 to fit the table. Note that the font size of the table title and footer is not affected. The former has a minimum size 10, and the latter is set by `footerFontSize` in [rmdTable], which defaults at 9.
 
-```{r tabSW2, echo=F}
+```{r tabSW2, echo=FALSE}
 rmdTable(df1, caption = tCap("maxTableWidth is set as 6.5 inches","tabSW2",isDocx),
          maxTableWidth = 6.5,footer = footer,header = header,rowHeaderInd = 1, isDocx = isDocx)
 ```
@@ -242,10 +247,10 @@ rmdTable(df1, caption = tCap("maxTableWidth is set as 6.5 inches","tabSW2",isDoc
  * columns in `rowHeaderInds`, e.g. _pathway_, may be wrapped more than once if each of its cells spans multiple cells.
  * other columns are wrapped as little as possible to avoid unnecessary wrapping; for example, "_Gene 4 w/ long names_" is not wrapped.
  
-```{r tabSW4, echo=T}
+```{r tabSW4, echo=TRUE}
 fileName=system.file("extdata", "example.table.3.csv", package = "wfr")
-df1 = read.csv(fileName,check.names = F)
-colnames(df1)=gsub('?','Δ',colnames(df1),fixed = T)
+df1 = read.csv(fileName,check.names = FALSE)
+colnames(df1)=gsub('?','Δ',colnames(df1),fixed = TRUE)
 rmdTable(df1, caption = tCap("maxTableWidth is set as 6.5 inches ","tabSW4",isDocx),
          maxTableWidth = 6.5,footer = footer,header = header,rowHeaderInd = 1,
          minFontSize = 9, isDocx = isDocx)
@@ -253,7 +258,7 @@ rmdTable(df1, caption = tCap("maxTableWidth is set as 6.5 inches ","tabSW4",isDo
 
  `r tRef("tabSW6",isDocx)` does not reduce font size since the algorithm sees column _pathway_ can be wrapped multiple times.
 
-```{r tabSW6, echo=F}
+```{r tabSW6, echo=FALSE}
 df2=df1
 df2[,2]=NULL
 footer2=footer[1]
@@ -266,7 +271,7 @@ rmdTable(df2, caption = tCap("maxTableWidth is set as 6.5 inches ","tabSW6",isDo
 In contrary, in `r tRef("tabSW7",isDocx)` the algorithm prefers reducing font size over wrapping column _gene_ since its table body cells are all single row.
 
 
-```{r tabSW7, echo=F}
+```{r tabSW7, echo=FALSE}
 df2=df1
 df2[,1]=NULL
 footer2=footer
@@ -297,10 +302,10 @@ webshot::install_phantomjs()
 Run the following code for a simple testing.
 ```{#numCode .R .numberLines}
 install.packages(c("flextable","knitr","kableExtra","captioner","officer",
-                   "openxlsx","bookdown", "pander","devtools"), dependencies=T)
+                   "openxlsx","bookdown", "pander","devtools"), dependencies=TRUE)
                    
 # installation from source; add path to the file
-devtools::install_github("blueskypie/wfr",dependencies=T)
+devtools::install_github("blueskypie/wfr",dependencies=TRUE)
 
 # testing
 library(wfr)
@@ -312,10 +317,14 @@ df1=data.frame(A=c("a","a","b3"),
                C1=c(1001.123,58.04,32.01),
                C2=c(-0.00321, 0.0121, 0.325))
 
-saveOutput(df1, oFileName="tab.1.csv",
+# output directory; set your own directory if preferred.               
+outDir = tempdir()
+ofn = file.path(outDir, "tab.1.csv")
+saveOutput(df1, oFileName=ofn,
            caption="testing table w/o formatting info")
 
-saveOutput(qplot(1:10,1:10), oFileName="fig.1.png",
+ofn = file.path(outDir, "fig.1.png")
+saveOutput(qplot(1:10,1:10), oFileName=ofn,
            caption="this is a testing plot")
 
 colWidth = "2,1,1,1"
@@ -325,25 +334,27 @@ footer = "A|Arkansas$~ref$|1|header
 || a|Arizona|2|body"
 rowHeaderInd = 2
 
-saveOutput(df1, oFileName = "tab.2.csv",
+ofn = file.path(outDir, "tab.2.csv")
+saveOutput(df1, oFileName = ofn,
            caption = "testing table w/ formatting info",
            header = header, footer = footer, colWidth = colWidth,
            rowHeaderInd = rowHeaderInd)
 
 wfrFile=system.file("extdata", "example.table.2.csv", package = "wfr")
-df1 = read.csv(wfrFile,check.names = F)
+df1 = read.csv(wfrFile,check.names = FALSE)
 header="pathway | gene | batch A | batch A | batch A | batch B |
         batch B | batch B | A vs B | A vs B | A vs B ||
         pathway | gene | N | ΔCt Mean | ΔCt SEM | N |
         ΔCt Mean | ΔCt SEM | LS mean | Fold change | p-value"
 footer="ΔCt Mean | ΔCt is calulated using median value as reference gene for each visit and patient,i.e., ΔCt = Ct - Ct$~median$ | a | header"
 
+ofn = file.path(outDir, "tab.3.csv")
 saveOutput(df1, oFileName="tab.3.csv",
            caption="testing a complex table",
            header=header, footer = footer,
            rowHeaderInd = 1, maxTableWidth = 6.5)
 
-exFn="all.outputs.xlsx"
+exFn = file.path(outDir, "all.outputs.xlsx")
 # open the file to see its content.
 writeExcel(exFn)
 
@@ -351,11 +362,10 @@ writeExcel(exFn)
 # all output formats work. Add a few headings so Table of Content can be
 # created and also see the effect of the docx reference template for docx
 # output.
-createRmd("all.outputs1.Rmd",exFn)
+rmdFn1 = file.path(outDir, "all.outputs1.Rmd")
+createRmd(rmdFn1,exFn)
 
+rmdFn2 = file.path(outDir, "all.outputs2.Rmd")
 # add additional formatting to all tables
-createRmd("all.outputs2.Rmd",exFn, tabPars="fontSize=12,theme='booktabs'")
+createRmd(rmdFn2,exFn, tabPars="fontSize=12,theme='booktabs'")
 ```
-
-
-

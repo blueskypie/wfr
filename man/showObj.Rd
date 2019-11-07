@@ -8,7 +8,7 @@ Display an object in knitr code chunk
 Display an object in knitr code chunk and set the caption with cross reference.
 }
 \usage{
-showObj(oDf,objID=NULL,isDocx=F,...)
+showObj(oDf,objID=NULL,isDocx=FALSE,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,7 +16,7 @@ showObj(oDf,objID=NULL,isDocx=F,...)
         (data.frame or matrix) Refers to \code{\link{OUTPUTS}}, the table containing the information of saved objects.
     }
     \item{isDocx}{
-        (boolean, F) is the Rmd output word_document2?
+        (boolean, FALSE) is the Rmd output word_document2?
     }
     \item{objID}{
         (character, NULL) The objID of the object in \code{oDf}. If NULL, it is assigned the \code{label} of the code chunk. But when running the code chunk alone, e.g. for debugging, the \code{label} is not accessible and must be explicitly supplied.
@@ -47,15 +47,17 @@ An object identified by \code{objID}, can be a ggplot2 or a table (flextable if 
     || C1|Kansas$^ref$|x|header
     || a|Arizona|2|body"
 
-    \dontrun{
-        saveOutput(df1,"t1.csv",caption = "1st testing table",header = header,
+    \donttest{
+        tmpDir = tempdir()
+        ofn = file.path(tmpDir, "t1.csv")
+        saveOutput(df1,ofn,caption = "1st testing table",header = header,
                    footer = footer, colWidth = colWidth,fontSize = 12 )
-        saveOutput(qplot(1:10,1:10),caption = "1st testing fig")
+        saveOutput(qplot(1:10,1:10),oPath=tmpDir, caption = "1st testing fig")
 
-        OUTPUTS[,"oPath"]=getwd()
-        write.csv(OUTPUTS,"all.outputs.csv")
+        ofn = file.path(tmpDir, "all.outputs.csv")
+        write.csv(OUTPUTS,ofn)
 
-        oDf=read.csv("all.outputs.csv",stringsAsFactors = FALSE)
+        oDf=read.csv(ofn,stringsAsFactors = FALSE)
         showObj(oDf,isDocx,objID = "tab1",rowHeaderInd=2)
         showObj(oDf,objID = "fig2")
     }

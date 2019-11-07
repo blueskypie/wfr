@@ -44,14 +44,15 @@ none
   || C1|Kansas$^ref$|x|header
   || a|Arizona|2|body"
 
-  \dontrun{
-    saveOutput(df1,"t1.csv",caption = "1st testing table",header = header,
-               footer = footer,colWidth = colWidth,fontSize = 12 )
-    saveOutput(qplot(1:10,1:10),caption = "1st testing fig")
-    saveOutput(df1,"t1.csv",caption = "1st testing table",header = header,
+  \donttest{
+    tmpDir = tempdir()
+    ofn = file.path(tmpDir, "tab.1.csv")
+    saveOutput(df1,ofn,caption = "1st testing table",header = header,
                footer = footer,colWidth = colWidth,fontSize = 12 )
 
-    fn1="output.xlsx"
+    saveOutput(qplot(1:10,1:10),oPath=tmpDir,caption = "1st testing fig")
+
+    fn1=file.path(tmpDir, "output.xlsx")
     writeExcel(fn1)
     df2=read.xlsx(fn1)
   }

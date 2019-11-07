@@ -5,10 +5,10 @@
 A R markdown and a Word template file
 }
 \description{
-A R markdown template file that can produce docx, html, or pdf file based on a flag, and a Word template file on which the style of Word output file is based on.
+A R markdown template file that can produce 'MS Word', html, or pdf file based on a flag, and a 'MS Word' template file on which the style of Word output file is based on.
 }
 \details{
-This R markdown template can produce docx, html, or pdf file based on the flag \code{oFormat} on line 3. The style of docx Word format is based on the Word template file. They can be accessed by
+This R markdown template can produce 'MS Word', html, or pdf file based on the flag \code{oFormat} on line 3. The style of 'MS Word' format is based on the 'MS Word' template file. They can be accessed by
 \itemize{
     \item \code{system.file("extdata", "rmd.template.Rmd", package = "wfr")}
     \item \code{system.file("extdata", "word.template.for.Rmd.docx", package = "wfr")}
@@ -18,5 +18,5 @@ Function \code{\link{createRmd}} appends knitr code chunks to this Rmd template 
 }
 \keyword{template}
 \keyword{rmd}
-\keyword{Word}
+\keyword{MS Word}
 

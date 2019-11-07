@@ -4,10 +4,10 @@
 ^wfr\.vignette\.pdf$
 ^wfr\.manual\.pdf$
 ^README\.md$
-^NEWS\.md$
 ^\.travis\.yml$
 ^\.git$
 ^.gitignore$
 ^LICENSE$
+^R/funs\.unfinished\.r
 
 ^CRAN-RELEASE$
