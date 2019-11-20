@@ -48,6 +48,7 @@ saveOutput=function(obj=NULL,oFileName,saveWorkspace=FALSE,oPath=getwd(),caption
     }
 
     rdsFn = NA
+    objPref = 'unknown'
     if (!is.null(obj)) {
         ofNameToken = unlist(strsplit(oBaseName, '.', TRUE))
         ofNamePrefix = paste(ofNameToken[-length(ofNameToken)], collapse = '.')
@@ -55,7 +56,7 @@ saveOutput=function(obj=NULL,oFileName,saveWorkspace=FALSE,oPath=getwd(),caption
         saveRDS(obj, file.path(oPath, rdsFn))
 
         rdsOnly = endsWith(tolower(oFileName), 'rds')
-        objPref = 'unknown'
+
         if (is.data.frame(obj) || is.matrix(obj)) {
             if(!rdsOnly){
                 write.csv(obj, file = file.path(oPath, oBaseName), ...)
@@ -68,8 +69,7 @@ saveOutput=function(obj=NULL,oFileName,saveWorkspace=FALSE,oPath=getwd(),caption
             objPref = 'fig'
             nRowScroll = nRowDisplay = maxTableWidth = theme = NA
         } else {
-            warning("the obj is not a table or ggplot!, saving r.image only")
-            saveWorkspace = TRUE
+            warning("the obj is not a table or ggplot!, saving RDS file only")
         }
     }
 
@@ -153,6 +153,7 @@ createRmd=function(outputRmdFn,outputListFn,
     file.copy(rmdTemplateFn,outputRmdFn,overwrite = TRUE)
     oFile=file(outputRmdFn,'at')
     oLine=paste0('\n\n```{r include=FALSE}
+    setwd("',getwd(),'")
     loadLibs(c("',paste0(libs,collapse='","'),'"))
     df1=read.xlsx("',outputListFn,'")\n```')
     writeLines(oLine,oFile)
@@ -161,16 +162,21 @@ createRmd=function(outputRmdFn,outputListFn,
     outputDf=outputDf[which(outputDf[,"eval"]),]
     outputDf=outputDf[order(outputDf$rmdInd),]
     for(i in 1:nrow(outputDf)){
-        objID=outputDf[i,"objID"]
-        if(grepl("^tab",outputDf[i,"objID"])){
-            oLine=paste0('\n********  \n`r tRef("',objID,'",isDocx)` is the table of ', outputDf[i,"caption"],"\n")
-            oLine=paste0(oLine,'\n```{r ',objID,"}\n    showObj(df1,\"",objID,"\"",tabPars,")\n```")
+        if(startsWith(outputDf[i,1],'#')){
+            writeLines(paste0("\n",outputDf[i,1],"\n"),oFile)
         }else{
-            oLine=paste0('\n********  \nFigure \\@ref(fig:',objID,') is the figure of ', outputDf[i,"caption"],"\n")
-            oLine=paste0(oLine,'\n```{r ',objID,figCap,"}\n    showObj(df1,\"",objID,"\")\n```")
+            objID=outputDf[i,"objID"]
+            if(grepl("^tab",outputDf[i,"objID"])){
+                oLine=paste0('\n`r tRef("',objID,'",isDocx)` is the table of ', outputDf[i,"caption"],"\n")
+                oLine=paste0(oLine,'\n```{r ',objID,"}\n    showObj(df1,\"",objID,"\"",tabPars,")\n```")
+            }else{
+                oLine=paste0('\nFigure \\@ref(fig:',objID,') is the figure of ', outputDf[i,"caption"],"\n")
+                oLine=paste0(oLine,'\n```{r ',objID,figCap,"}\n    showObj(df1,\"",objID,"\")\n```")
+            }
+
+            writeLines(oLine,oFile)
         }
 
-        writeLines(oLine,oFile)
     }
 
     close(oFile)
@@ -408,9 +414,11 @@ rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NU
 # v=c('a','b','b','c','d','d')
 .getEndIndOfDifferentCell=function(v){
     borderInd=NULL
-    for (i in 1:(length(v)-1)) {
-        if(v[i]!=v[i+1]){
-            borderInd=c(borderInd,i)
+    if(length(v)>1){
+       for (i in 1:(length(v)-1)) {
+            if(v[i]!=v[i+1]){
+                borderInd=c(borderInd,i)
+            }
         }
     }
 
@@ -430,16 +438,20 @@ breakRatio=function(aStr){
 
 
 .nAveUniqueContinuiousValue=function(v){
+    # get the average number of cells whose have identical content and are next to each other
     nUni=1
-    if(!is.character(v)){
-        v=as.character(v)
-    }
+    if(length(v)>1){
+        if(!is.character(v)){
+            v=as.character(v)
+        }
 
-    for(i in 2:length(v)){
-        if(v[i]!=v[i-1]){
-            nUni=nUni+1
+        for(i in 2:length(v)){
+            if(v[i]!=v[i-1]){
+                nUni=nUni+1
+            }
         }
     }
+
     floor(length(v)/nUni)
 }
 

@@ -14,7 +14,7 @@ writeExcel(fileName, ...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
     \item{fileName}{
-        (character) The name of the Excel file with extension 'xlsx'
+        (character) The name of the Excel file with extension 'xlsx'. Can contain relative or absolute file paths.
     }
     \item{...}{
         parameters passed to \code{\link[openxlsx]{write.xlsx}}

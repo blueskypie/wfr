@@ -1,7 +1,7 @@
 Package: wfr
 Type: Package
-Title: A Work-Flow to Assist the Creation of Documents Containing Many Tables and Figures
-Version: 0.5.0
+Title: A Work-Flow to Assist Document Creation for R Data Analysis
+Version: 0.5.2
 Authors@R: c(person("Jike", "Cui", role = c("aut", "cre"),email = "jike.cui@sanofi.com"),
              person("Wenfei", "Zhang", role = c("aut","ctb")),
              person("Weiliang", "Qiu", role = c("aut","ctb")),

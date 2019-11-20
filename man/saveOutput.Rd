@@ -22,7 +22,7 @@ saveOutput(obj=NULL,oFileName, saveWorkspace=FALSE, oPath=getwd(), caption=NA ,
   }
 
   \item{oFileName}{
-    (character). The file name of the text (e.g. csv) or image (e.g. png) file of the \code{obj} to save. Use, e.g. \code{./path1/my.csv}, instead of \code{path1/my.csv} to include a relative path into the file name. If \code{oFileName} contains either a relative or absolute path, the \code{oPath} will be replaced by the whole path.
+    (character). The file name of the text (e.g. csv) or image (e.g. png) file of the \code{obj} to save. Can contain relative or absolute file paths; Use, e.g. \code{./path1/my.csv}, instead of \code{path1/my.csv} to include a relative path into the file name. If \code{oFileName} contains either a relative or absolute path, the \code{oPath} will be replaced by the whole path.
   }
 
   \item{saveWorkspace}{
