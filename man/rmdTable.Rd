@@ -13,14 +13,14 @@ rmdTable(dataDf, header = list(colnames(dataDf)), footer = NULL,
          rowHeaderInd = NULL, isDocx = TRUE, nRowScroll = 20,
          nRowDisplay = 200, maxTableWidth = 7,
          theme = c("zebra","box","booktabs","vanilla","tron","vader"),
-         underLine2Space=TRUE, splitCamelCase=FALSE,
+         char2space=NULL, splitCamelCase=FALSE,
          footerFontSize=9, minFontSize=9)
 
 myFlexTable(dataDf,header=list(colnames(dataDf)), footer = NULL,
             colWidths = NULL, fontSize = 11, caption = NULL,
             rowHeaderInd = NULL, mergeBodyColumn = TRUE, maxTableWidth = 7,
             theme = c("zebra","box","booktabs","vanilla","tron","vader"),
-            underLine2Space=TRUE, splitCamelCase=FALSE,
+            char2space=NULL, splitCamelCase=FALSE,
             footerFontSize=9, minFontSize=9)
 
 myKable(dataDf,header = list(colnames(dataDf)), footer = NULL,
@@ -97,8 +97,8 @@ setFlexTableFontSize(ft,fontSize,footerFontSize=9)
         see those parameters in \code{\link{setWidths}}. For \code{myFlexTable} only.
     }
 
-    \item{underLine2Space}{
-    (boolean, TRUE) Should the underlines '_' in the 1st row of column header be changed to space? If so, when a column header containing '_' is wrapped, the wrapping happens at a space in stead of the middle of a word.
+    \item{char2space}{
+    (character string, NULL) A regular expression. Should the characters represented by this regular expression in the bottom row of column header be changed to space? If so, when the column header is wrapped, the wrapping happens at a space in stead of the middle of a word. For example, setting \code{char2space = '[^A-z0-9]'} changes all non-letter and non-digit characters into space.
   }
 
   \item{splitCamelCase}{

@@ -312,7 +312,7 @@ tRef <- function(label,isDocx) {
 rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NULL,fontSize=11,
                   caption=NULL,rowHeaderInd=NULL,isDocx=TRUE,nRowScroll=20, nRowDisplay=200,
                   maxTableWidth=7,theme=c("zebra","box","booktabs","vanilla","tron","vader"),
-                  underLine2Space=TRUE, splitCamelCase=FALSE, footerFontSize=9,minFontSize=9){
+                  char2space=NULL, splitCamelCase=FALSE, footerFontSize=9,minFontSize=9){
     # dataDf: the data frame
     # header: can be a string or a list of one or more character vectors
     #   string: use '|' to separate cell, and '||' to separate rows.
@@ -357,21 +357,6 @@ rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NU
         caption=paste0(caption," (top ", nRowDisplay, " rows only)")
     }
 
-    if(underLine2Space || splitCamelCase){
-        header1=header[[length(header)]]
-
-        if(underLine2Space){
-            header1=gsub('_',' ',header1,fixed = TRUE)
-        }
-
-        if(splitCamelCase){
-            header1=gsub("(?<=[a-z])(?=[A-Z])", " \\1", header1, perl = TRUE)
-        }
-
-        header[[length(header)]]=header1
-    }
-
-
     if(is.matrix(dataDf)) {
         dataDf=as.data.frame(dataDf)
     }
@@ -401,7 +386,7 @@ rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NU
         myFlexTable(dataDf,header=header, footer=footer,colWidths=colWidths,fontSize=fontSize,
                     caption=caption,rowHeaderInd=rowHeaderInd,maxTableWidth=maxTableWidth,
                     theme = theme,
-                    underLine2Space=underLine2Space, splitCamelCase=splitCamelCase,
+                    char2space=char2space, splitCamelCase=splitCamelCase,
                     footerFontSize=footerFontSize,minFontSize=minFontSize)
     }else{
         myKable(dataDf,header=header, footer=footer,caption=caption,
@@ -578,7 +563,7 @@ setFlexTableFontSize=function(ft,fontSize,footerFontSize=9){
 myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NULL,
                      fontSize=11,caption=NULL,rowHeaderInd=NULL,mergeBodyColumn=TRUE,
                      maxTableWidth=7,theme=c("zebra","box","booktabs","vanilla","tron","vader"),
-                     underLine2Space=TRUE, splitCamelCase=FALSE,footerFontSize=9,minFontSize=9){
+                     char2space=NULL, splitCamelCase=FALSE,footerFontSize=9,minFontSize=9){
     # create a table used in Rmd file that can output correctly to common format, esp. docx, whereas kable() cannot.
     #   uses flextable package: https://davidgohel.github.io/flextable/articles/overview.html
     #   similar packages: https://hughjonesd.github.io/huxtable/huxtable.html
@@ -586,6 +571,21 @@ myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths
     # library(flextable)
     # library(magrittr)
     # library(officer)
+
+    if(!is.null(char2space) || splitCamelCase){
+        header1=header[[length(header)]]
+
+        if(!is.null(char2space)){
+            header1=gsub(char2space,' ',header1)
+        }
+
+        if(splitCamelCase){
+            header1=gsub("(?<=[a-z])(?=[A-Z])", " \\1", header1, perl = TRUE)
+        }
+
+        header[[length(header)]]=header1
+    }
+
 
     rownames(dataDf)=NULL
     if(is.matrix(dataDf)) dataDf=as.data.frame(dataDf)

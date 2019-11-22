@@ -1,3 +1,9 @@
+# wfr 0.5.3
+
+## minor change
+* `rmdTable` and `myFlexTable` function
+    * replaced parameter `underLine2Space` by `char2space`
+
 # wfr 0.5.2
 
 ## minor change
