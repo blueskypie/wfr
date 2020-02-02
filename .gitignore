@@ -4,4 +4,4 @@ vignettes/*.R
 vignettes/*.md
 vignettes/*.html
 CRAN-RELEASE
-R/funs.unfinished.r
+

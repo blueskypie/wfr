@@ -64,7 +64,7 @@ saveOutput=function(obj=NULL,oFileName,saveWorkspace=FALSE,oPath=getwd(),caption
             objPref = 'tab'
         } else if (is.ggplot(obj)) {
             if(!rdsOnly){
-                ggsave(file.path(oPath, oBaseName), obj, dpi = 600)
+                ggsave(file.path(oPath, oBaseName), obj, dpi = 600, ...)
             }
             objPref = 'fig'
             nRowScroll = nRowDisplay = maxTableWidth = theme = NA
@@ -87,7 +87,7 @@ saveOutput=function(obj=NULL,oFileName,saveWorkspace=FALSE,oPath=getwd(),caption
     }
 
 
-    if (nrow(pEnv$OUTPUTS) > 0 &&
+    if (counter2 > 1 &&
         objID %in% pEnv$OUTPUTS[1:(counter2 - 1), "objID"]) {
         warning("duplicate objID, OFCOUNTER is appended.")
         objID = paste0(objID, counter2)
@@ -115,6 +115,7 @@ saveOutput=function(obj=NULL,oFileName,saveWorkspace=FALSE,oPath=getwd(),caption
     if(counter2>1){
         pEnv$OUTPUTS = rbind.data.frame(pEnv$OUTPUTS[1:(counter2 - 1), ], row1, stringsAsFactors = FALSE)
     }else{
+        pEnv$OUTPUTS=data.frame()
         pEnv$OUTPUTS = rbind.data.frame(pEnv$OUTPUTS, row1, stringsAsFactors = FALSE)
     }
 

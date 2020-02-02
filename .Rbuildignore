@@ -8,6 +8,6 @@
 ^\.git$
 ^.gitignore$
 ^LICENSE$
-^R/funs\.unfinished\.r
 
 ^CRAN-RELEASE$
+^R/funs\.unfinished\.r$
