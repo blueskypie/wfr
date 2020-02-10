@@ -129,6 +129,14 @@ saveOutput=function(obj=NULL,oFileName,saveWorkspace=FALSE,oPath=getwd(),caption
 }
 
 
+ofcmm=function(num=1){
+    pEnv <- parent.frame()
+    #pEnv=globalenv()
+    counter2 = get('OFCOUNTER', pEnv)
+    assign('OFCOUNTER', counter2 - num, pEnv)
+}
+
+
 writeExcel=function(fileName,...){
     #library(openxlsx)
     pEnv <- parent.frame()

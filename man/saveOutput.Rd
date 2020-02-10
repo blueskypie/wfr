@@ -1,5 +1,5 @@
 \name{saveOutput}
-\alias{saveOutput} \alias{OFCOUNTER} \alias{OUTPUTS} \alias{Global.Variable}
+\alias{saveOutput} \alias{OFCOUNTER} \alias{OUTPUTS} \alias{Global.Variable} \alias{ofcmm}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Save the current R image or the object rds file and add its information to the matrix OUTPUTS
@@ -13,7 +13,11 @@ saveOutput(obj=NULL,oFileName, saveWorkspace=FALSE, oPath=getwd(), caption=NA ,
            rowHeaderInd=NA, colWidths=NA, fontSize=11, nRowScroll = 20,
            nRowDisplay = 200, maxTableWidth = 7.2, theme = "zebra",
            numberOutputFiles=TRUE,...)
+
+ofcmm(num=1)
 }
+
+
 
 
 \arguments{
@@ -77,8 +81,12 @@ saveOutput(obj=NULL,oFileName, saveWorkspace=FALSE, oPath=getwd(), caption=NA ,
   }
 
   \item{...}{
-    parameters passed to \code{\link[utils]{write.csv}} to save the \code{obj}, if a data.frame or matrix, as text file.
+    parameters passed to \code{\link[utils]{write.csv}} or \code{\link[ggplot2]{ggsave}} to save the \code{obj}, if a data.frame or matrix, as text file.
   }
+
+   \item{num}{
+     the number to deduct from \code{OFCOUNTER}
+   }
 }
 
 
@@ -105,6 +113,8 @@ For the simplicity of coding, two global variables are created for this function
         \item Create the matrix \code{OUTPUTS} if it is NULL, and assign the values of all other parameters to corresponding columns in \code{OUTPUTS}
         \item Increment \code{\link{OFCOUNTER}} by 1
     }
+
+\code{ofcmm} deducts \code{OFCOUNTER} by \code{num}. It can be used to remove the information appended to \code{OUTPUTS} from running \code{saveOutput}.
 }
 
 
@@ -133,7 +143,13 @@ df1=data.frame(A=c("a","a","b3"),
 \donttest{
   tmpDir = tempdir()
   ofn = file.path(tmpDir, "tab.1.csv")
-  saveOutput(df1, oFileName=ofn, caption="this is a testing table")
+  saveOutput(df1, oFileName=ofn, caption="this is a wrong caption")
+  print(OFCOUNTER)
+  print(OUTPUTS)
+  ofcmm()
+  print(OFCOUNTER)
+  saveOutput(df1, oFileName=ofn, caption="this is the correct caption")
+  print(OUTPUTS)
 }
 
 print(OFCOUNTER)
