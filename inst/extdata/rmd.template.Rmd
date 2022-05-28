@@ -4,7 +4,8 @@ knit: (function(inputFile, encoding) {
     outputFileName <- paste("test",oFormat,sep='.'); 
     wordTemplateFileName = system.file("extdata", "word.template.for.Rmd.dotx", package = "wfr");
     if(oFormat=="docx"){
-        oObj=bookdown::word_document2(toc=T,reference_docx = wordTemplateFileName);
+        #oObj=bookdown::word_document2(toc=T,reference_docx = wordTemplateFileName);
+        oObj=bookdown::word_document2(toc=T);
     }else if(oFormat=="html"){
         oObj=bookdown::html_document2(toc=T,toc_float=T,highlight="haddock");
     }else if(oFormat=="pdf"){
