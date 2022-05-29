@@ -4,14 +4,15 @@ knit: (function(inputFile, encoding) {
     outputFileName <- paste("test",oFormat,sep='.'); 
     wordTemplateFileName = system.file("extdata", "word.template.for.Rmd.dotx", package = "wfr");
     if(oFormat=="docx"){
-        #oObj=bookdown::word_document2(toc=T,reference_docx = wordTemplateFileName);
         oObj=bookdown::word_document2(toc=T);
     }else if(oFormat=="html"){
         oObj=bookdown::html_document2(toc=T,toc_float=T,highlight="haddock");
+    }else if(oFormat=="nb.html"){
+        oObj=bookdown::html_notebook2(toc=T,toc_float=T,number_sections=T,code_folding='hide');
     }else if(oFormat=="pdf"){
         oObj=bookdown::pdf_document2(toc=T,highlight="haddock");
     }else{
-        stop("other format not defined yet!");
+        stop("other formats are not defined yet!");
     };
     rmarkdown::render(inputFile,
                         encoding=encoding,
