@@ -1,7 +1,7 @@
 Package: wfr
 Type: Package
 Title: A Work-Flow to Assist Document Creation for R Data Analysis
-Version: 0.5.3.1
+Version: 0.5.4
 Authors@R: c(person("Jike", "Cui", role = c("aut", "cre"),email = "jike.cui@sanofi.com"),
              person("Wenfei", "Zhang", role = c("aut","ctb")),
              person("Weiliang", "Qiu", role = c("aut","ctb")),
@@ -22,6 +22,6 @@ Suggests:
     tinytex,
     webshot,
     testthat
-RoxygenNote: 6.1.1.9000
+RoxygenNote: 7.2.3
 URL: http://github.com/blueskypie/wfr
 BugReports: http://github.com/blueskypie/wfr/issues

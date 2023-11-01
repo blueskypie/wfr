@@ -14,18 +14,18 @@ rmdTable(dataDf, header = list(colnames(dataDf)), footer = NULL,
          nRowDisplay = 200, maxTableWidth = 7,
          theme = c("zebra","box","booktabs","vanilla","tron","vader"),
          char2space=NULL, splitCamelCase=FALSE,
-         footerFontSize=9, minFontSize=9)
+         footerFontSize=9, minFontSize=9,...)
 
 myFlexTable(dataDf,header=list(colnames(dataDf)), footer = NULL,
             colWidths = NULL, fontSize = 11, caption = NULL,
             rowHeaderInd = NULL, mergeBodyColumn = TRUE, maxTableWidth = 7,
             theme = c("zebra","box","booktabs","vanilla","tron","vader"),
             char2space=NULL, splitCamelCase=FALSE,
-            footerFontSize=9, minFontSize=9)
+            footerFontSize=9, minFontSize=9,...)
 
 myKable(dataDf,header = list(colnames(dataDf)), footer = NULL,
         caption = NULL, rowHeaderInd = NULL, nRowScroll = 20,
-        theme = c("zebra","box","vanilla"))
+        theme = c("zebra","box","vanilla"),...)
 
 setFlexTableFontSize(ft,fontSize,footerFontSize=9)
 }
@@ -111,6 +111,10 @@ setFlexTableFontSize(ft,fontSize,footerFontSize=9)
 
     \item{ft}{
         a flextable object
+    }
+
+    \item{...}{
+        if \code{isDocx}, passed to \code{flextable::flextable()}, and \code{kableExtra::kable()} otherwise.
     }
 }
 

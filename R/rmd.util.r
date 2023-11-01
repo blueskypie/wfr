@@ -321,7 +321,7 @@ tRef <- function(label,isDocx) {
 rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NULL,fontSize=11,
                   caption=NULL,rowHeaderInd=NULL,isDocx=TRUE,nRowScroll=20, nRowDisplay=200,
                   maxTableWidth=7,theme=c("zebra","box","booktabs","vanilla","tron","vader"),
-                  char2space=NULL, splitCamelCase=FALSE, footerFontSize=9,minFontSize=9){
+                  char2space=NULL, splitCamelCase=FALSE, footerFontSize=9,minFontSize=9,...){
     # dataDf: the data frame
     # header: can be a string or a list of one or more character vectors
     #   string: use '|' to separate cell, and '||' to separate rows.
@@ -396,10 +396,10 @@ rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NU
                     caption=caption,rowHeaderInd=rowHeaderInd,maxTableWidth=maxTableWidth,
                     theme = theme,
                     char2space=char2space, splitCamelCase=splitCamelCase,
-                    footerFontSize=footerFontSize,minFontSize=minFontSize)
+                    footerFontSize=footerFontSize,minFontSize=minFontSize,...)
     }else{
         myKable(dataDf,header=header, footer=footer,caption=caption,
-                rowHeaderInd=rowHeaderInd,nRowScroll=nRowScroll,theme = theme)
+                rowHeaderInd=rowHeaderInd,nRowScroll=nRowScroll,theme = theme,...)
     }
 
 }
@@ -572,7 +572,7 @@ setFlexTableFontSize=function(ft,fontSize,footerFontSize=9){
 myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NULL,
                      fontSize=11,caption=NULL,rowHeaderInd=NULL,mergeBodyColumn=TRUE,
                      maxTableWidth=7,theme=c("zebra","box","booktabs","vanilla","tron","vader"),
-                     char2space=NULL, splitCamelCase=FALSE,footerFontSize=9,minFontSize=9){
+                     char2space=NULL, splitCamelCase=FALSE,footerFontSize=9,minFontSize=9,...){
     # create a table used in Rmd file that can output correctly to common format, esp. docx, whereas kable() cannot.
     #   uses flextable package: https://davidgohel.github.io/flextable/articles/overview.html
     #   similar packages: https://hughjonesd.github.io/huxtable/huxtable.html
@@ -601,7 +601,7 @@ myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths
 
     #avoid "duplicated col_key" error from flextable in case some column names are identical
     colnames(dataDf)=paste0('C',1:ncol(dataDf))
-    ft <- flextable(dataDf)
+    ft <- flextable(dataDf,...)
     if(!is.empty(header)){
         if(is.character(header)){
             header=str2list(header)
@@ -679,7 +679,8 @@ myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths
 
         for(i in footer){
             if(length(i)==1){
-                ft=flextable::footnote(ft,value=as_paragraph(list_values=convertOneFooterStr(i)),ref_symbols ="") # ,part = "header",
+                #ft=flextable::footnote(ft,value=as_paragraph(list_values=convertOneFooterStr(i)),ref_symbols ="") # ,part = "header",
+                ft=flextable::add_footer_lines(ft,value=as_paragraph(list_values=convertOneFooterStr(i)))
             }else{
                 if(i[4]=="header"){
                     inds=getInd(header,i[1])
@@ -772,7 +773,8 @@ myFlexTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths
 }
 
 myKable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,caption=NULL,
-                 rowHeaderInd=NULL,nRowScroll=20,theme=c("zebra","box", "vanilla")){
+                 rowHeaderInd=NULL,nRowScroll=20,theme=c("zebra","box", "vanilla"),
+                 ...){
     # for table output in html format in Rmd file
     # library(kableExtra)
     rownames(dataDf)=NULL
@@ -832,7 +834,7 @@ myKable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,caption=NULL,
     }
 
     kTheme=switch (theme[1],box="bordered",zebra="striped","basic")
-    ft <- kable(dataDf,caption = caption, escape = TRUE,align = "c") %>% kable_styling(kTheme)
+    ft <- kable(dataDf,caption = caption, escape = TRUE,align = "c",...) %>% kable_styling(kTheme)
 
     if(length(header)>0){
         for (h1 in header) {

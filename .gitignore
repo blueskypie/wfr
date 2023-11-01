@@ -5,3 +5,6 @@ vignettes/*.md
 vignettes/*.html
 CRAN-RELEASE
 
+.Rdata
+.httr-oauth
+.DS_Store
