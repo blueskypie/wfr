@@ -11,7 +11,8 @@ Font size in px, font family, and color can be set. Alignment is center.
 setHtmlHeaderProperty(
     titleFontSize = NULL, titleFontFamily = NULL, titleColor = NULL,
     authorFontSize = NULL, authorFontFamily = NULL, authorColor = NULL,
-    dateFontSize = NULL, dateFontFamily = NULL, dateColor = NULL)
+    dateFontSize = NULL, dateFontFamily = NULL, dateColor = NULL,
+    pageWidth=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -41,6 +42,9 @@ setHtmlHeaderProperty(
 }
   \item{dateColor}{
 %%     ~~Describe \code{dateColor} here~~
+}
+  \item{pageWidth}{
+        (numeric) the page width in px
 }
 }
 \references{

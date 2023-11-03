@@ -925,7 +925,8 @@ showObj=function(oDf,objID=NULL,isDocx=FALSE,...){
 # Rmd format function ----------
 setHtmlHeaderProperty=function(titleFontSize=NULL,titleFontFamily=NULL,titleColor=NULL,
                                authorFontSize=NULL,authorFontFamily=NULL,authorColor=NULL,
-                               dateFontSize=NULL,dateFontFamily=NULL,dateColor=NULL){
+                               dateFontSize=NULL,dateFontFamily=NULL,dateColor=NULL,
+                               pageWidth=NULL){
     hs=c("title","author","date")
     props=c('font-size','font-family','color')
     names(props)=c('FontSize','FontFamily','Color')
@@ -942,6 +943,10 @@ setHtmlHeaderProperty=function(titleFontSize=NULL,titleFontFamily=NULL,titleColo
             oLine=paste0(oLine,props[[j]],': ',propVals[[j]],";\n")
         }
         oLine=paste0(oLine,"text-align: center;\n}\n")
+    }
+
+    if(!is.null(pageWidth)){
+        paste0(oLine,'div.main-container {\nmax-width: ',pageWidth,'px;\n}\n')
     }
     paste0(oLine,'</style>')
 }
