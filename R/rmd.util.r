@@ -926,7 +926,7 @@ showObj=function(oDf,objID=NULL,isDocx=FALSE,...){
 setHtmlHeaderProperty=function(titleFontSize=NULL,titleFontFamily=NULL,titleColor=NULL,
                                authorFontSize=NULL,authorFontFamily=NULL,authorColor=NULL,
                                dateFontSize=NULL,dateFontFamily=NULL,dateColor=NULL,
-                               pageWidth=NULL){
+                               pageWidth=NULL,tableWidth=100){
     hs=c("title","author","date")
     props=c('font-size','font-family','color')
     names(props)=c('FontSize','FontFamily','Color')
@@ -945,8 +945,12 @@ setHtmlHeaderProperty=function(titleFontSize=NULL,titleFontFamily=NULL,titleColo
         oLine=paste0(oLine,"text-align: center;\n}\n")
     }
 
+    if(!is.null(tableWidth)){
+        oLine=paste0(oLine,'.table {width: ',tableWidth,'%;\n}\n')
+    }
+
     if(!is.null(pageWidth)){
-        paste0(oLine,'div.main-container {\nmax-width: ',pageWidth,'px;\n}\n')
+        oLine=paste0(oLine,'div.main-container {\nmax-width: ',pageWidth,'px;\n}\n')
     }
     paste0(oLine,'</style>')
 }

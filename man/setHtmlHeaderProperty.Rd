@@ -12,7 +12,7 @@ setHtmlHeaderProperty(
     titleFontSize = NULL, titleFontFamily = NULL, titleColor = NULL,
     authorFontSize = NULL, authorFontFamily = NULL, authorColor = NULL,
     dateFontSize = NULL, dateFontFamily = NULL, dateColor = NULL,
-    pageWidth=NULL)
+    pageWidth=NULL,tableWidth = 100)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -45,6 +45,9 @@ setHtmlHeaderProperty(
 }
   \item{pageWidth}{
         (numeric) the page width in px
+}
+  \item{tableWidth}{
+        (numeric) the percentage of table width over page width
 }
 }
 \references{
