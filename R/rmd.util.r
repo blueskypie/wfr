@@ -228,6 +228,7 @@ isVecNumeric=function(v){
 }
 
 
+
 num2formattedStr=function(v){
     if(is.character(v) || is.factor(v)){
         v2=as.character(v)
@@ -237,29 +238,32 @@ num2formattedStr=function(v){
     }
 
     if(is.numeric(v)){
-        v2=abs(v)
-        vMin = min(v2,na.rm = TRUE)
-        vMed = median(v2,na.rm = TRUE)
-        vMax = max(v2,na.rm = TRUE)
-
-        if(all(is.na(v))){
+        inds=which(is.finite(v) & v!=0)
+        if(length(inds)==length(v)){
             v
-        }else if(vMed>=1000000 || vMed < 0.01){
-            format(v,scientific = TRUE,digits = 3)
-        }else if(vMed>=100 || all(nDecimal(v) %in% c(0,NA))){
-            # 2nd case is integers in (-999,999) but has decimal
-            #   points in representation, i.e. 30.00
-            setNsmall(v,0)
-        }else if(vMed>=10){
-            setNsmall(v,1)
-        }else if(vMed>=1){
-            setNsmall(v,2)
-        }else if(vMin>=0.1){
-            setNsmall(v,2+(max(v,na.rm = TRUE)<=1))
-        }else if(vMin>=0.01){
-            setNsmall(v,3)
         }else{
-            format(v,scientific = TRUE,digits = 3)
+            v2=abs(v[inds])
+            vMin = min(v2,na.rm = TRUE)
+            vMed = median(v2,na.rm = TRUE)
+            vMax = max(v2,na.rm = TRUE)
+
+            if(vMed>=1000000 || vMed < 0.01){
+                format(v,scientific = TRUE,digits = 3)
+            }else if(vMed>=100 || all(nDecimal(v) %in% c(0,NA))){
+                # 2nd case is integers in (-999,999) but has decimal
+                #   points in representation, i.e. 30.00
+                setNsmall(v,0)
+            }else if(vMed>=10){
+                setNsmall(v,1)
+            }else if(vMed>=1){
+                setNsmall(v,2)
+            }else if(vMin>=0.1){
+                setNsmall(v,2+(max(v,na.rm = TRUE)<=1))
+            }else if(vMin>=0.01){
+                setNsmall(v,3)
+            }else{
+                format(v,scientific = TRUE,digits = 3)
+            }
         }
     }else{ v }
 }
