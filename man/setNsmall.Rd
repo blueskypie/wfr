@@ -8,7 +8,7 @@ Set the nSmall of a number, and convert it to character
 set the nsmall, i.e. number of decimal points, of a number, and convert it to character;  1000 separator ',' is added if \code{max(abs(v)) > 999}.
 }
 \usage{
-setNsmall(v, nSmall)
+setNsmall(v, nSmall, keepInt)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,6 +18,10 @@ setNsmall(v, nSmall)
 
     \item{nSmall}{
         (integer) nsmall, i.e. number of decimal points, of a number (0 <= nsmall <= 20)
+    }
+
+    \item{keepInt}{
+        (logical, F) if TRUE, don't format integers
     }
 }
 \value{

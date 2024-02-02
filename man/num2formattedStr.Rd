@@ -9,12 +9,15 @@ Format a vector of numbers based on their distribution
 }
 \usage{
 isVecNumeric(v)
-num2formattedStr(v)
+num2formattedStr(v,intTypeCutoff)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{v}{
-        (vector) a vector
+        (vector) a numeric or char vector
+    }
+    \item{intTypeCutoff}{
+        (integer, 10) if a number is an integer and its absolute value is less than intTypeCutoff, don't format. Set NULL to disable.
     }
 }
 \details{

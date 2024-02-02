@@ -204,18 +204,21 @@ nDecimal=function(v){
 }
 
 # digits only goes with scientific notation
-setNsmall=function(v,nSmall){
+setNsmall=function(v,nSmall,keepInt=F){
+    #keepInt: keep int type for int values
     if(max(abs(v),na.rm = TRUE)>999){
         k=format(round(v,digits = nSmall),big.mark = ',',nsmall = nSmall)
     }else{
         k=format(round(v,digits = nSmall),nsmall = nSmall)
     }
 
-    # for raw values of int type, keep them int
-    if(nSmall>0){
-        indsInt=which(nDecimal(v)==0)
-        if(length(indsInt)>0){
-            k[indsInt]=sub('\\.0+','',k[indsInt])
+    if(keepInt){
+        # for raw values of int type, keep them int
+        if(nSmall>0){
+            indsInt=which(nDecimal(v)==0)
+            if(length(indsInt)>0){
+                k[indsInt]=sub('\\.0+','',k[indsInt])
+            }
         }
     }
 
@@ -239,7 +242,10 @@ isVecNumeric=function(v){
 
 
 
-num2formattedStr=function(v){
+num2formattedStr=function(v, intTypeCutoff=10){
+    # intTypeCutoff: if abs(x) < intTypeCutoff,don't format
+
+    k=v
     if(is.character(v) || is.factor(v)){
         v2=as.character(v)
         if(isVecNumeric(v2)){
@@ -248,34 +254,42 @@ num2formattedStr=function(v){
     }
 
     if(is.numeric(v)){
+        keepInt=!is.null(intTypeCutoff)
         inds=which(is.finite(v) & v!=0)
-        if(length(inds)==0){
-            v
-        }else{
+        if(length(inds)>0){
             v2=abs(v[inds])
             vMin = min(v2,na.rm = TRUE)
             vMed = median(v2,na.rm = TRUE)
             vMax = max(v2,na.rm = TRUE)
 
             if(vMed>=1000000 || vMed < 0.01){
-                format(v,scientific = TRUE,digits = 3)
+                k=format(v,scientific = TRUE,digits = 3)
             }else if(vMed>=100 || all(nDecimal(v) %in% c(0,NA))){
                 # 2nd case is integers in (-999,999) but has decimal
                 #   points in representation, i.e. 30.00
-                setNsmall(v,0)
+                k=setNsmall(v,0,keepInt)
             }else if(vMed>=10){
-                setNsmall(v,1)
+                k=setNsmall(v,1,keepInt)
             }else if(vMed>=1){
-                setNsmall(v,2)
+                k=setNsmall(v,2,keepInt)
             }else if(vMin>=0.1){
-                setNsmall(v,2+(max(v,na.rm = TRUE)<=1))
+                k=setNsmall(v,2+(max(v,na.rm = TRUE)<=1),keepInt)
             }else if(vMin>=0.01){
-                setNsmall(v,3)
+                k=setNsmall(v,3,keepInt)
             }else{
-                format(v,scientific = TRUE,digits = 3)
+                k=format(v,scientific = TRUE,digits = 3)
             }
         }
-    }else{ v }
+
+        if(!is.null(intTypeCutoff)){
+            indsInt=which(nDecimal(v)==0 & abs(v)<intTypeCutoff)
+            if(length(indsInt)>0){
+                k[indsInt]=v[indsInt]
+            }
+        }
+    }
+
+    k
 }
 
 
@@ -335,7 +349,8 @@ tRef <- function(label,isDocx) {
 rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NULL,fontSize=11,
                   caption=NULL,rowHeaderInd=NULL,isDocx=TRUE,nRowScroll=20, nRowDisplay=200,
                   maxTableWidth=7,theme=c("zebra","box","booktabs","vanilla","tron","vader"),
-                  char2space=NULL, splitCamelCase=FALSE, footerFontSize=9,minFontSize=9,...){
+                  char2space=NULL, splitCamelCase=FALSE, footerFontSize=9,minFontSize=9,
+                  intTypeCutoff=10,...){
     # dataDf: the data frame
     # header: can be a string or a list of one or more character vectors
     #   string: use '|' to separate cell, and '||' to separate rows.
@@ -388,7 +403,7 @@ rmdTable=function(dataDf,header=list(colnames(dataDf)), footer=NULL,colWidths=NU
         #if(is.integer(dataDf[,i]) | is.numeric(dataDf[,i])){
             #if dataDf is a numeric matrix, the 1st run of this line changes dataDf to a char matrix,
             #  i.e. following run of this line won't have any effect.
-            dataDf[,i]=num2formattedStr(dataDf[,i])
+            dataDf[,i]=num2formattedStr(dataDf[,i],intTypeCutoff)
         #}
     }
 

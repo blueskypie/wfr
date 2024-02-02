@@ -113,6 +113,10 @@ setFlexTableFontSize(ft,fontSize,footerFontSize=9)
         a flextable object
     }
 
+    \item{intTypeCutoff}{
+        (integer, 10) if a number is an integer and its absolute value is less than intTypeCutoff, don't format. Set NULL to disable.
+    }
+
     \item{...}{
         if \code{isDocx}, passed to \code{flextable::flextable()}, and \code{kableExtra::kable()} otherwise.
     }
