@@ -192,8 +192,8 @@ createRmd=function(outputRmdFn,outputListFn,
 }
 
 # utility function used in Rmd file -------------------
-nDecimal=function(x){
-    h=strsplit(as.character(x), ".",fixed = TRUE)
+nDecimal=function(v){
+    h=strsplit(as.character(v), ".",fixed = TRUE)
     sapply(h, function(x){
         if(is.na(x[1])){
             NA
@@ -206,10 +206,20 @@ nDecimal=function(x){
 # digits only goes with scientific notation
 setNsmall=function(v,nSmall){
     if(max(abs(v),na.rm = TRUE)>999){
-        format(round(v,digits = nSmall),big.mark = ',',nsmall = nSmall)
+        k=format(round(v,digits = nSmall),big.mark = ',',nsmall = nSmall)
     }else{
-        format(round(v,digits = nSmall),nsmall = nSmall)
+        k=format(round(v,digits = nSmall),nsmall = nSmall)
     }
+
+    # for raw values of int type, keep them int
+    if(nSmall>0){
+        indsInt=which(nDecimal(v)==0)
+        if(length(indsInt)>0){
+            k[indsInt]=sub('\\.0+','',k[indsInt])
+        }
+    }
+
+    k
 }
 
 

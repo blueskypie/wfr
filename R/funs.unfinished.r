@@ -1,3 +1,39 @@
+num2formattedStr=function(v){
+    if(is.character(v) || is.factor(v)){
+        v2=as.character(v)
+        if(isVecNumeric(v2)){
+            v=as.numeric(v2)
+        }
+    }
+
+    if(is.numeric(v)){
+        v2=abs(v)
+        vMin = min(v2,na.rm = TRUE)
+        vMed = median(v2,na.rm = TRUE)
+        vMax = max(v2,na.rm = TRUE)
+
+        if(all(is.na(v))){
+            v
+        }else if(vMed>=1000000 || vMed < 0.01){
+            format(v,scientific = TRUE,digits = 3)
+        }else if(vMed>=100 || all(nDecimal(v) %in% c(0,NA))){
+            # 2nd case is integers in (-999,999) but has decimal
+            #   points in representation, i.e. 30.00
+            setNsmall(v,0)
+        }else if(vMed>=10){
+            setNsmall(v,1)
+        }else if(vMed>=1){
+            setNsmall(v,2)
+        }else if(vMin>=0.1){
+            setNsmall(v,2+(max(v,na.rm = TRUE)<=1))
+        }else if(vMin>=0.01){
+            setNsmall(v,3)
+        }else{
+            format(v,scientific = TRUE,digits = 3)
+        }
+    }else{ v }
+}
+
 # docRmd=function(outputRmdFn,sortByDate=FALSE;
 #                    rmdTemplateFn=system.file("extdata", "rmd.template.Rmd", package = "wfr"),...){
 #     fileNames=list.files(...)
