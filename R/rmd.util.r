@@ -249,7 +249,7 @@ num2formattedStr=function(v){
 
     if(is.numeric(v)){
         inds=which(is.finite(v) & v!=0)
-        if(length(inds)==length(v)){
+        if(length(inds)==0){
             v
         }else{
             v2=abs(v[inds])
