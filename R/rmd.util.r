@@ -214,7 +214,7 @@ setNsmall=function(v,nSmall,keepInt=F){
 
     # round(c(1234567890123456789,2.44),1)
     # [1] 1.234568e+18 2.400000e+00
-    if(all(grepl('e',k,fixed = T))){
+    if(any(grepl('e',k,fixed = T))){
         k=format(v,scientific = TRUE,digits = nSmall+1)
     }
 
