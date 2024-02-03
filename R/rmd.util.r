@@ -212,13 +212,17 @@ setNsmall=function(v,nSmall,keepInt=F){
         k=format(round(v,digits = nSmall),nsmall = nSmall)
     }
 
-    if(keepInt){
+    # round(c(1234567890123456789,2.44),1)
+    # [1] 1.234568e+18 2.400000e+00
+    if(all(grepl('e',k,fixed = T))){
+        k=format(v,scientific = TRUE,digits = nSmall+1)
+    }
+
+    if(keepInt && nSmall>0){
         # for raw values of int type, keep them int
-        if(nSmall>0){
-            indsInt=which(nDecimal(v)==0)
-            if(length(indsInt)>0){
-                k[indsInt]=sub('\\.0+','',k[indsInt])
-            }
+        indsInt=which(nDecimal(v)==0)
+        if(length(indsInt)>0){
+            k[indsInt]=v[indsInt]
         }
     }
 
@@ -254,7 +258,6 @@ num2formattedStr=function(v, intTypeCutoff=10){
     }
 
     if(is.numeric(v)){
-        keepInt=!is.null(intTypeCutoff)
         inds=which(is.finite(v) & v!=0)
         if(length(inds)>0){
             v2=abs(v[inds])
@@ -267,15 +270,15 @@ num2formattedStr=function(v, intTypeCutoff=10){
             }else if(vMed>=100 || all(nDecimal(v) %in% c(0,NA))){
                 # 2nd case is integers in (-999,999) but has decimal
                 #   points in representation, i.e. 30.00
-                k=setNsmall(v,0,keepInt)
+                k=setNsmall(v,0)
             }else if(vMed>=10){
-                k=setNsmall(v,1,keepInt)
+                k=setNsmall(v,1)
             }else if(vMed>=1){
-                k=setNsmall(v,2,keepInt)
+                k=setNsmall(v,2)
             }else if(vMin>=0.1){
-                k=setNsmall(v,2+(max(v,na.rm = TRUE)<=1),keepInt)
+                k=setNsmall(v,2+(max(v,na.rm = TRUE)<=1))
             }else if(vMin>=0.01){
-                k=setNsmall(v,3,keepInt)
+                k=setNsmall(v,3)
             }else{
                 k=format(v,scientific = TRUE,digits = 3)
             }
